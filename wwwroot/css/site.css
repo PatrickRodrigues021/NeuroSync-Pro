@@ -1,22 +1,55 @@
-html {
-  font-size: 14px;
+/* ESTRUTURA DO DASHBOARD */
+body, html {
+    height: 100%;
+    margin: 0;
+    background-color: #f4f6f9; /* Fundo cinza bem claro para destacar os cards */
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+#wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* ESTILOS DO MENU LATERAL */
+#sidebar-wrapper {
+    min-width: 250px;
+    max-width: 250px;
+    background-color: #212529; /* Cor escura do Bootstrap */
+    color: white;
+    display: flex;
+    flex-direction: column;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+.sidebar-header {
+    padding: 20px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border-bottom: 1px solid #373b3e;
+    text-align: center;
 }
 
-body {
-  margin-bottom: 60px;
+.sidebar-link {
+    padding: 15px 20px;
+    display: block;
+    color: #adb5bd; /* Texto cinza claro */
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.sidebar-link:hover {
+    color: #ffffff;
+    background-color: #343a40; /* Fica um pouco mais claro ao passar o mouse */
+}
+
+.sidebar-link i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* ÁREA DE CONTEÚDO (DIREITA) */
+#page-content-wrapper {
+    flex: 1;
+    overflow-y: auto; /* Cria barra de rolagem apenas no conteúdo, o menu fica fixo */
 }

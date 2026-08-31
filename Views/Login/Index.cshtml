@@ -1,0 +1,63 @@
+@{
+    // Isso desativa o menu lateral e o cabeçalho padrão para esta tela
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - NeuroSync</title>
+    <!-- Trazendo o Bootstrap e os Ícones para deixar a tela bonita -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light d-flex align-items-center" style="height: 100vh;">
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card shadow border-0 rounded-3">
+                    <div class="card-body p-5 text-center">
+                        
+                        <!-- Logotipo -->
+                        <h2 class="text-primary mb-3 fw-bold">
+                            <i class="bi bi-brain fs-1 d-block mb-2"></i> NeuroSync
+                        </h2>
+                        <p class="text-muted mb-4">Acesso Restrito ao Sistema</p>
+
+                        <!-- Mensagem de Erro (Aparece se errar a senha) -->
+                        @if (ViewBag.Erro != null)
+                        {
+                            <div class="alert alert-danger py-2 small fw-bold">
+                                <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Erro
+                            </div>
+                        }
+
+                        <!-- Formulário -->
+                        <form asp-controller="Login" asp-action="Entrar" method="post">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Usuário" required>
+                                <label for="usuario">Usuário</label>
+                            </div>
+                            
+                            <div class="form-floating mb-4">
+                                <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha" required>
+                                <label for="senha">Senha</label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                                <i class="bi bi-box-arrow-in-right"></i> Entrar no Sistema
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+                <p class="text-center text-muted mt-4 small">&copy; 2026 NeuroSync. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

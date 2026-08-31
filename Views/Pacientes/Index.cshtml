@@ -1,0 +1,75 @@
+@model IEnumerable<NeuroSync.Models.Paciente>
+
+@{
+    ViewData["Title"] = "Meus Pacientes";
+}
+
+<div class="container mt-4 mb-5">
+    
+    <!-- Cabeçalho e Botão de Novo -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-secondary mb-0"><i class="bi bi-people-fill text-primary me-2"></i> Gestão de Pacientes</h2>
+        <a asp-action="Create" class="btn btn-primary fw-bold shadow-sm">
+            <i class="bi bi-plus-lg"></i> Novo Paciente
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <!-- Barra de Pesquisa -->
+        <div class="card-header bg-light py-3 border-bottom">
+            <form asp-action="Index" method="get" class="d-flex w-50">
+                <div class="input-group">
+                    <input type="text" name="termoBusca" class="form-control border-secondary-subtle" placeholder="Buscar paciente pelo nome..." value="@ViewBag.BuscaAtual">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+                    @if(ViewBag.BuscaAtual != null)
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary">Limpar</a>
+                    }
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabela de Resultados -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Nome do Paciente</th>
+                            <th>Idade</th>
+                            <th>Responsável</th>
+                            <th class="text-end pe-4">Ações (Prontuário)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">@item.Nome</td>
+                                    <td>@item.Idade anos</td>
+                                    <td>@(item.NomeMae ?? item.NomePai ?? "Não informado")</td>
+                                    <td class="text-end pe-4">
+                                        <a asp-action="Details" asp-route-id="@item.IdPaciente" class="btn btn-sm btn-info text-white fw-bold shadow-sm rounded-pill px-3">
+                                            <i class="bi bi-folder2-open"></i> Abrir Prontuário
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-search fs-1 d-block mb-2 opacity-50"></i>
+                                    Nenhum paciente encontrado.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

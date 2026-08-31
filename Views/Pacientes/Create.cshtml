@@ -1,0 +1,174 @@
+@model NeuroSync.Models.Paciente
+
+@{
+    ViewData["Title"] = "Cadastrar Novo Paciente";
+}
+
+<div class="container mt-4 mb-5">
+    <h2>Cadastrar Novo Paciente</h2>
+    <p class="text-muted">Preencha os dados abaixo para iniciar o acompanhamento.</p>
+    <hr />
+
+    <form asp-action="Create" method="post">
+
+        <div asp-validation-summary="All" class="alert alert-danger fw-bold"></div>
+        
+        <!-- SESSÃO 1: DADOS DO PACIENTE E ESCOLARES -->
+        <h4 class="mt-4 mb-3 text-primary">Dados do Paciente (Criança / Adolescente)</h4>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Nome" class="control-label">Nome Completo *</label>
+                <input asp-for="Nome" class="form-control" placeholder="Nome do paciente" required />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="Cpf" class="control-label">CPF (se houver)</label>
+                <input asp-for="Cpf" class="form-control" placeholder="000.000.000-00" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="Telefone" class="control-label">Telefone Próprio</label>
+                <input asp-for="Telefone" class="form-control" placeholder="(00) 00000-0000" />
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- ID adicionado ao campo de data para o Javascript encontrar -->
+            <div class="col-md-3 mb-3">
+                <label asp-for="DataNascimento" class="control-label">Data de Nascimento *</label>
+                <input asp-for="DataNascimento" type="date" class="form-control" id="campoDataNascimento" required />
+            </div>
+            <!-- Campo Idade como Somente Leitura (readonly), pois será preenchido pelo JS -->
+            <div class="col-md-2 mb-3">
+                <label asp-for="Idade" class="control-label">Idade</label>
+                <input asp-for="Idade" type="number" class="form-control bg-light" id="campoIdade" readonly />
+            </div>
+            <div class="col-md-5 mb-3">
+                <label asp-for="EscolaEstuda" class="control-label">Escola onde estuda</label>
+                <input asp-for="EscolaEstuda" class="form-control" placeholder="Nome da instituição" />
+            </div>
+            <div class="col-md-2 mb-3">
+                <label asp-for="Serie" class="control-label">Série/Ano</label>
+                <input asp-for="Serie" class="form-control" placeholder="Ex: 5º Ano" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="NomeProfessora" class="control-label">Nome da Professora</label>
+                <input asp-for="NomeProfessora" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="NomePedagogaPsicologa" class="control-label">Pedagoga / Psicóloga da Escola</label>
+                <input asp-for="NomePedagogaPsicologa" class="form-control" />
+            </div>
+        </div>
+
+        <!-- SESSÃO 2: DADOS FAMILIARES -->
+        <h4 class="mt-5 mb-3 text-primary">Dados Familiares e Endereço</h4>
+        
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <label asp-for="Endereco" class="control-label">Endereço Residencial (Família)</label>
+                <input asp-for="Endereco" class="form-control" placeholder="Rua, Número, Bairro, Cidade" />
+            </div>
+        </div>
+
+        <!-- Dados da Mãe -->
+        <h5 class="text-secondary mt-3">Dados da Mãe</h5>
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label asp-for="NomeMae" class="control-label">Nome da Mãe</label>
+                <input asp-for="NomeMae" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="CpfMae" class="control-label">CPF</label>
+                <input asp-for="CpfMae" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="DataNascimentoMae" class="control-label">Data Nasc.</label>
+                <input asp-for="DataNascimentoMae" type="date" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label asp-for="TelefoneMae" class="control-label">Telefone</label>
+                <input asp-for="TelefoneMae" class="form-control" />
+            </div>
+            <div class="col-md-5 mb-3">
+                <label asp-for="EmailMae" class="control-label">E-mail</label>
+                <input asp-for="EmailMae" type="email" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="ProfissaoMae" class="control-label">Profissão</label>
+                <input asp-for="ProfissaoMae" class="form-control" />
+            </div>
+        </div>
+
+        <hr class="my-4"/>
+
+        <!-- Dados do Pai -->
+        <h5 class="text-secondary">Dados do Pai</h5>
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label asp-for="NomePai" class="control-label">Nome do Pai</label>
+                <input asp-for="NomePai" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="CpfPai" class="control-label">CPF</label>
+                <input asp-for="CpfPai" class="form-control" />
+            </div>
+            <div class="col-md-3 mb-3">
+                <label asp-for="DataNascimentoPai" class="control-label">Data Nasc.</label>
+                <input asp-for="DataNascimentoPai" type="date" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label asp-for="TelefonePai" class="control-label">Telefone</label>
+                <input asp-for="TelefonePai" class="form-control" />
+            </div>
+            <div class="col-md-5 mb-3">
+                <label asp-for="EmailPai" class="control-label">E-mail</label>
+                <input asp-for="EmailPai" type="email" class="form-control" />
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="ProfissaoPai" class="control-label">Profissão</label>
+                <input asp-for="ProfissaoPai" class="form-control" />
+            </div>
+        </div>
+
+        <!-- BOTÕES -->
+        <div class="form-group mt-5 mb-5 text-end">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg me-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary btn-lg px-5">Salvar Cadastro Completo</button>
+        </div>
+    </form>
+</div>
+
+<!-- SCRIPT PARA CALCULAR A IDADE AUTOMATICAMENTE -->
+@section Scripts {
+    <script>
+        // Fica "escutando" o campo Data de Nascimento
+        document.getElementById('campoDataNascimento').addEventListener('change', function () {
+            var dataSelecionada = new Date(this.value); // Pega a data digitada
+            
+            // Verifica se é uma data válida
+            if (!isNaN(dataSelecionada.getTime())) {
+                var dataAtual = new Date();
+                var idade = dataAtual.getFullYear() - dataSelecionada.getFullYear();
+                var mes = dataAtual.getMonth() - dataSelecionada.getMonth();
+                
+                // Se ainda não chegou o mês do aniversário, ou se é o mês mas o dia não chegou, diminui 1 ano
+                if (mes < 0 || (mes === 0 && dataAtual.getDate() < dataSelecionada.getDate())) {
+                    idade--;
+                }
+                
+                // Joga o resultado no campo de Idade
+                document.getElementById('campoIdade').value = idade;
+            } else {
+                // Se a data for apagada, limpa a idade
+                document.getElementById('campoIdade').value = '';
+            }
+        });
+    </script>
+}

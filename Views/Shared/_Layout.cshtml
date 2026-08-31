@@ -1,49 +1,70 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - NeuroSync</title>
+    <!-- CSS do Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Ícones do Bootstrap (Deixa o menu bonito) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Nosso CSS Personalizado -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/NeuroSync.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">NeuroSync</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+    <div id="wrapper">
+        
+        <!-- PAINEL LATERAL (SIDEBAR) -->
+        <nav id="sidebar-wrapper">
+            <div class="sidebar-header">
+                <i class="bi bi-puzzle-fill text-primary"></i> NeuroSync Pro
+            </div>
+            
+            <div class="list-group list-group-flush mt-3">
+                <a asp-controller="Home" asp-action="Index" class="sidebar-link">
+                    <i class="bi bi-grid-1x2-fill"></i> Painel Inicial
+                </a>
+                
+                <a asp-controller="Pacientes" asp-action="Index" class="sidebar-link">
+                    <i class="bi bi-people"></i> Pacientes
+                </a>
+                
+                <a asp-controller="Agenda" asp-action="Index" class="sidebar-link">
+                    <i class="bi bi-calendar-week-fill"></i> Agenda
+                </a>
+                
+                <a asp-controller="Financeiro" asp-action="Index" class="sidebar-link">
+                    <i class="bi bi-currency-dollar"></i> Financeiro
+                </a>
+
+                <!-- CÓDIGO NOVO: Separador e Botão de Sair -->
+                <hr class="text-white-50 my-3">
+
+                <a asp-controller="Login" asp-action="Sair" class="sidebar-link text-danger fw-bold">
+                    <i class="bi bi-box-arrow-left"></i> Sair do Sistema
+                 </a>
+
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+        <!-- CONTEÚDO PRINCIPAL (ONDE AS PÁGINAS ABREM) -->
+        <div id="page-content-wrapper">
+            <!-- Barra superior fina (opcional, bom para colocar nome do usuário logado depois) -->
+            <header class="top-bar border-bottom bg-white shadow-sm px-4 py-3 mb-4 d-flex justify-content-end">
+                <span class="text-muted"><i class="bi bi-person-circle"></i> Olá, <strong class="text-warning">@(User?.Identity?.Name ?? "Usuário")</strong>!</span>
+            </header>
+
+            <!-- É aqui que as Views (Index, Create, etc) são renderizadas -->
+            <main role="main" class="container-fluid px-4">
+                @RenderBody()
+            </main>
+        </div>
+        
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - NeuroSync - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <!-- Scripts padrão do sistema -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
