@@ -1,183 +1,262 @@
-﻿@model IEnumerable<NeuroSync.Models.Paciente>
-
-@{
-    ViewData["Title"] = "Painel Inicial";
+﻿@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="container-fluid mt-4 mb-5">
-    <h2 class="mb-4 text-secondary"><i class="bi bi-graph-up-arrow"></i> Visão Geral</h2>
+<style>
+    /* Estilos dos cartões inspirados na imagem */
+    .card-dash { 
+        border: none; 
+        border-radius: 16px; 
+        background-color: white; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+        transition: 0.2s; 
+    }
+    .card-dash:hover { box-shadow: 0 6px 25px rgba(0,0,0,0.06); transform: translateY(-2px); }
+    
+    .icon-box { 
+        width: 55px; 
+        height: 55px; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 1.6rem; 
+    }
+</style>
 
-    <!-- LINHA 1: CARTÕES DE RESUMO (Métricas Rápidas) -->
-    <div class="row mb-5">
-        
-        <!-- Cartão 1: Total de Pacientes -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-primary shadow-sm h-100 border-0">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title text-uppercase text-white-50 fw-bold">Total de Pacientes</h6>
-                        <h2 class="display-5 mb-0 fw-bold">@ViewBag.TotalPacientes</h2>
-                    </div>
-                    <i class="bi bi-people-fill" style="font-size: 3.5rem; opacity: 0.3;"></i>
-                </div>
+<!-- SAUDAÇÃO -->
+<div class="mb-5">
+    <h3 class="fw-bold mb-2" style="color: var(--text-dark);">Bom dia, Dr. Patrick! 👋</h3>
+    <p class="text-muted" style="font-weight: 500;">Aqui está o resumo da sua clínica hoje.</p>
+</div>
+
+<!-- LINHA 1: CARTÕES DE RESUMO -->
+<div class="row g-4 mb-5">
+    
+    <!-- Card 1: Pacientes Ativos (Fundo Azul Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f8fbff; border: 1px solid #eef4fc;">
+            <div class="icon-box bg-primary-subtle text-primary me-3">
+                <i class="bi bi-person-fill"></i>
             </div>
-        </div>
-
-        <!-- Cartão 2: Consultas Hoje -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-success shadow-sm h-100 border-0">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title text-uppercase text-white-50 fw-bold">Consultas Hoje</h6>
-                        <h2 class="display-5 mb-0 fw-bold">@ViewBag.ConsultasHoje</h2>
-                    </div>
-                    <i class="bi bi-calendar-check-fill" style="font-size: 3.5rem; opacity: 0.3;"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cartão 3: Financeiro -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-warning shadow-sm h-100 border-0">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="card-title text-uppercase text-dark-50 fw-bold">A Receber no Mês</h6>
-                        <h2 class="display-5 mb-0 text-dark fw-bold">@ViewBag.TotalReceberMes.ToString("C")</h2>
-                    </div>
-                    <i class="bi bi-currency-dollar text-dark" style="font-size: 3.5rem; opacity: 0.3;"></i>
-                </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">128</h2>
+                <span class="text-muted small fw-bold">Pacientes ativos</span>
+                <div class="small fw-bold mt-1" style="color: #10B981;"><i class="bi bi-arrow-up-short"></i>+12 este mês</div>
             </div>
         </div>
     </div>
 
-    <!-- LINHA 2: CONTEÚDO PRINCIPAL (Tabela + Calendário) -->
-    <div class="row">
-        
-        <!-- LADO ESQUERDO: TABELA DE PACIENTES (Ocupa 8 colunas) -->
-        <div class="col-md-8 mb-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
-                    <h5 class="mb-0 text-secondary fw-bold"><i class="bi bi-person-lines-fill"></i> Últimos Pacientes Cadastrados</h5>
-                    <a asp-controller="Pacientes" asp-action="Create" class="btn btn-sm btn-primary fw-bold">+ Novo Paciente</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-secondary">
-                                <tr>
-                                    <th class="ps-4">Nome do Paciente</th>
-                                    <th>Idade</th>
-                                    <th>Responsável</th>
-                                    <th>Data de Cadastro</th>
-                                    <th class="text-end pe-4">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model != null && Model.Any())
-                                {
-                                    foreach (var paciente in Model.OrderByDescending(p => p.CriadoEm).Take(5))
-                                    {
-                                        <tr>
-                                            <td class="ps-4 fw-bold text-dark">@paciente.Nome</td>
-                                            <td>@paciente.Idade anos</td>
-                                            <td>@(paciente.NomeMae ?? paciente.NomePai ?? "Não informado")</td>
-                                            <td>@paciente.CriadoEm.ToString("dd/MM/yyyy")</td>
-                                            <td class="text-end pe-4">
-                                                <a asp-controller="Pacientes" asp-action="Edit" asp-route-id="@paciente.IdPaciente" class="btn btn-sm btn-outline-warning fw-bold text-dark me-1" title="Editar Cadastro">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <a asp-controller="Pacientes" asp-action="Delete" asp-route-id="@paciente.IdPaciente" class="btn btn-sm btn-outline-danger fw-bold me-1" title="Excluir Paciente">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </a>
-                                                <a asp-controller="Pacientes" asp-action="Details" asp-route-id="@paciente.IdPaciente" class="btn btn-sm btn-outline-info fw-bold" title="Abrir Prontuário">
-                                                    <i class="bi bi-folder2-open"></i> Prontuário
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted">
-                                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                                            Nenhum paciente cadastrado ainda.
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+    <!-- Card 2: Sessões Hoje (Fundo Ciano Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f2fcfc; border: 1px solid #e6f7f7;">
+            <div class="icon-box me-3" style="color: #16C4C8; background-color: #e0f8f8;">
+                <i class="bi bi-clipboard2-pulse"></i>
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">24</h2>
+                <span class="text-muted small fw-bold">Sessões hoje</span>
+                <div class="small text-muted mt-1 fw-bold">8 concluídas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Pendências (Fundo Amarelo Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #fffaf0; border: 1px solid #fdf0d5;">
+            <div class="icon-box bg-warning-subtle text-warning me-3">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">12</h2>
+                <span class="text-muted small fw-bold">Pendências</span>
+                <div class="small text-muted mt-1 fw-bold">prontuários</div>
+            </div>
+        </div>
+    </div>
+    
+<!-- Card 4: Financeiro (Fundo Verde Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f0fdf4; border: 1px solid #e1f7e8;">
+            <div class="icon-box bg-success-subtle text-success me-3">
+                <i class="bi bi-cash-coin"></i> <!-- Ícone corrigido aqui! -->
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark); font-size: 1.8rem;">R$ 15,4k</h2>
+                <span class="text-muted small fw-bold">Receita do mês</span>
+                <div class="small text-success mt-1 fw-bold"><i class="bi bi-arrow-up-short"></i>+8.5% vs. anterior</div>
+            </div>
+        </div>
+    </div>
+
+<<!-- LINHA 2: LISTAS E GRÁFICOS -->
+<div class="row g-4">
+    
+    <!-- LADO ESQUERDO: Próximos Atendimentos -->
+    <div class="col-lg-6">
+        <div class="card-dash p-0 h-100 d-flex flex-column">
+            <!-- Cabeçalho mais elegante -->
+            <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: var(--text-dark);">
+                    <i class="bi bi-calendar-check text-primary me-2"></i> Próximos atendimentos
+                </h5>
+                <a href="/Agenda" class="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3">Ver agenda completa</a>
+            </div>
+            
+            <div class="d-flex flex-column p-4 gap-4 flex-grow-1">
+                
+                <!-- Paciente 1 -->
+                <div class="d-flex align-items-center border-bottom pb-3">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block" style="color: var(--text-dark);">09:00</span>
+                        <span style="font-size: 0.75rem;">10:00</span>
+                    </div>
+                    <div class="icon-box bg-primary-subtle text-primary me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold;">
+                        J
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">João Silva</h6>
+                        <span class="text-muted small fw-bold">Fonoaudiologia</span>
+                    </div>
+                    <!-- Badge preenchendo o vazio -->
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 border border-success-subtle">
+                            <i class="bi bi-check2-circle me-1"></i> Confirmado
+                        </span>
                     </div>
                 </div>
-            </div>
-        </div>
-
-<!-- LADO DIREITO: MINI CALENDÁRIO (Versão Premium com Avatares) -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
-                <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
-                    <h6 class="mb-0 text-dark fw-bold"><i class="bi bi-calendar-day text-primary me-2"></i>Agenda do Dia</h6>
-                    <a asp-controller="Agenda" asp-action="Index" class="text-decoration-none small text-primary fw-bold">Ver tudo</a>
+                
+                <!-- Paciente 2 -->
+                <div class="d-flex align-items-center border-bottom pb-3">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block text-primary">10:00</span>
+                        <span style="font-size: 0.75rem;">10:45</span>
+                    </div>
+                    <div class="icon-box me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold; color: #16C4C8; background-color: #e0f8f8;">
+                        M
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">Maria Oliveira</h6>
+                        <span class="text-muted small fw-bold">Psicologia</span>
+                    </div>
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-primary text-white rounded-pill px-3 py-2 shadow-sm">
+                            <i class="bi bi-play-circle me-1"></i> Em andamento
+                        </span>
+                    </div>
                 </div>
                 
-                <div class="card-body pt-0">
-                    @if (ViewBag.ProximosAgendamentos != null && ViewBag.ProximosAgendamentos.Count > 0)
-                    {
-                        <div class="mt-2">
-                            @foreach (var agenda in ViewBag.ProximosAgendamentos)
-                            {
-                                // Configuração de Cores Modernas
-                                string statusColor = "bg-primary"; 
-                                string statusText = "text-primary"; 
-                                string statusBg = "bg-primary-subtle";
-
-                                if (agenda.Status == "Realizado") { 
-                                    statusColor = "bg-success"; statusText = "text-success"; statusBg = "bg-success-subtle"; 
-                                }
-                                if (agenda.Status == "Falta" || agenda.Status == "Cancelado") { 
-                                    statusColor = "bg-danger"; statusText = "text-danger"; statusBg = "bg-danger-subtle"; 
-                                }
-
-                                // Lógica em C# para pegar a inicial do paciente
-                                string pacienteNome = agenda.Paciente != null ? agenda.Paciente.Nome : "Desconhecido";
-                                string inicial = !string.IsNullOrEmpty(pacienteNome) ? pacienteNome.Substring(0, 1).ToUpper() : "?";
-
-                                <!-- Mini-Card da Consulta -->
-                                <div class="d-flex align-items-center mb-3 p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #f1f1f1;">
-                                    
-                                    <!-- Avatar com a Inicial -->
-                                    <div class="@statusColor text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; flex-shrink: 0;">
-                                        @inicial
-                                    </div>
-
-                                    <!-- Informações -->
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.95rem;">@pacienteNome</h6>
-                                        <small class="text-muted d-block mt-1" style="font-size: 0.8rem;">
-                                            <i class="bi bi-clock"></i> @agenda.DataHora.ToString("HH:mm") &nbsp;&bull;&nbsp; @agenda.DataHora.ToString("dd/MM")
-                                        </small>
-                                    </div>
-
-                                    <!-- Badge de Status -->
-                                    <div class="text-end ms-2">
-                                        <span class="badge rounded-pill @statusBg @statusText border-0 px-2 py-1" style="font-size: 0.75rem;">
-                                            @agenda.Status
-                                        </span>
-                                    </div>
-                                    
-                                </div>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <!-- Design de "Agenda Vazia" mais elegante -->
-                        <div class="text-center text-muted py-5 mt-3 rounded" style="background-color: #f8f9fa; border: 1px dashed #dee2e6;">
-                            <i class="bi bi-calendar2-x fs-1 d-block mb-3 text-secondary opacity-50"></i>
-                            <p class="mb-0 small fw-bold">Agenda livre!</p>
-                            <span class="small opacity-75">Nenhuma consulta próxima.</span>
-                        </div>
-                    }
+                <!-- Paciente 3 (Sem borda no último) -->
+                <div class="d-flex align-items-center">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block" style="color: var(--text-dark);">11:00</span>
+                        <span style="font-size: 0.75rem;">11:30</span>
+                    </div>
+                    <div class="icon-box bg-warning-subtle text-warning me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold;">
+                        P
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">Pedro Santos</h6>
+                        <span class="text-muted small fw-bold">Terapia Ocupacional</span>
+                    </div>
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-light text-secondary rounded-pill px-3 py-2 border">
+                            <i class="bi bi-clock me-1"></i> Aguardando
+                        </span>
+                    </div>
                 </div>
+
             </div>
         </div>
+    </div>
+
+    <!-- LADO DIREITO: Gráfico de Status das Sessões -->
+    <div class="col-lg-6">
+        <div class="card-dash p-0 h-100 d-flex flex-column">
+            <!-- Cabeçalho -->
+            <div class="p-4 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: var(--text-dark);">
+                    <i class="bi bi-pie-chart text-primary me-2"></i> Status das Sessões <span class="text-muted fs-6 fw-normal ms-1">(Setembro)</span>
+                </h5>
+            </div>
+            
+            <!-- Palco do Gráfico -->
+            <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center p-4" style="min-height: 260px;">
+                
+                <!-- Container limitador para o gráfico não se espalhar muito -->
+                <div style="position: relative; height: 220px; width: 100%; max-width: 400px; display: flex; justify-content: center;">
+                    <canvas id="statusChart"></canvas>
+                    
+                    <!-- O TRUQUE: O Número no meio da rosca -->
+                    <div class="position-absolute top-50 start-50 translate-middle text-center" style="pointer-events: none; margin-left: -55px;"> <!-- Margin puxa um pouco pra esquerda pra compensar a legenda -->
+                        <h2 class="fw-bolder mb-0" style="color: var(--text-dark); line-height: 1;">77</h2>
+                        <span class="text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Total</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        const ctx = document.getElementById('statusChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Realizadas', 'Agendadas', 'Canceladas', 'Faltas'],
+                datasets: [{
+                    data: [42, 28, 5, 2],
+                    backgroundColor: [
+                        '#10B981', 
+                        '#315BEF', 
+                        '#F59E0B', 
+                        '#EF4444'  
+                    ],
+                    borderWidth: 0, 
+                    cutout: '82%', // Aumentei o buraco para o número respirar!
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right', 
+                        labels: {
+                            usePointStyle: true, 
+                            padding: 25,
+                            boxWidth: 8,
+                            font: { 
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", 
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#64748B' 
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#071A3A',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                layout: {
+                    padding: 0
+                }
+            }
+        });
+    </script>
+}
