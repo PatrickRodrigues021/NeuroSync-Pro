@@ -27,9 +27,34 @@ namespace NeuroSync.Models
         [Column("idade")]
         public int Idade { get; set; }
 
+// --- NOVO ENDEREÇO DIVIDIDO ---
+        [MaxLength(10)]
+        [Column("cep")]
+        public string? Cep { get; set; }
+
         [MaxLength(150)]
-        [Column("endereco")]
-        public string? Endereco { get; set; }
+        [Column("logradouro")]
+        public string? Logradouro { get; set; }
+
+        [MaxLength(20)]
+        [Column("numero")]
+        public string? Numero { get; set; }
+
+        [MaxLength(100)]
+        [Column("complemento")]
+        public string? Complemento { get; set; }
+
+        [MaxLength(100)]
+        [Column("bairro")]
+        public string? Bairro { get; set; }
+
+        [MaxLength(100)]
+        [Column("cidade")]
+        public string? Cidade { get; set; }
+
+        [MaxLength(2)]
+        [Column("estado")]
+        public string? Estado { get; set; }
 
         [MaxLength(150)]
         [Column("email")]

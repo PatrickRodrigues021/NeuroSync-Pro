@@ -1,75 +1,107 @@
 @model IEnumerable<NeuroSync.Models.Paciente>
-
 @{
-    ViewData["Title"] = "Meus Pacientes";
+    ViewData["Title"] = "Pacientes";
 }
 
-<div class="container mt-4 mb-5">
+<style>
+    /* Estilo do Cartão Principal */
+    .card-table { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+
+    /* Estilo das Abas */
+    .nav-tabs-custom { border-bottom: 2px solid #f1f5f9; }
+    .nav-tabs-custom .nav-link { border: none; color: var(--text-muted); font-weight: 600; padding: 12px 24px; background: transparent; margin-bottom: -2px; transition: 0.3s; }
+    .nav-tabs-custom .nav-link:hover { color: var(--text-dark); }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
+    /* Estilo da Tabela Limpa */
+    .table-custom { margin-bottom: 0; vertical-align: middle; }
+    .table-custom thead th { border-bottom: 1px solid #f1f5f9; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; padding: 16px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .table-custom tbody tr { border-bottom: 1px solid #f8fafc; transition: 0.2s; }
+    .table-custom tbody tr:hover { background-color: #f8fafc; }
+    .table-custom td { padding: 16px 8px; color: var(--text-dark); font-weight: 500; font-size: 0.95rem; }
+
+    /* Bolinha com a Inicial do Nome */
+    .avatar-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #eef2ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
     
-    <!-- Cabeçalho e Botão de Novo -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-secondary mb-0"><i class="bi bi-people-fill text-primary me-2"></i> Gestão de Pacientes</h2>
-        <a asp-action="Create" class="btn btn-primary fw-bold shadow-sm">
-            <i class="bi bi-plus-lg"></i> Novo Paciente
-        </a>
-    </div>
+    /* Barra de Busca */
+    .search-box { position: relative; }
+    .search-box input { border-radius: 20px; padding-left: 35px; border: 1px solid #e2e8f0; background-color: #f8fafc; }
+    .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+</style>
 
-    <div class="card shadow-sm border-0">
-        <!-- Barra de Pesquisa -->
-        <div class="card-header bg-light py-3 border-bottom">
-            <form asp-action="Index" method="get" class="d-flex w-50">
-                <div class="input-group">
-                    <input type="text" name="termoBusca" class="form-control border-secondary-subtle" placeholder="Buscar paciente pelo nome..." value="@ViewBag.BuscaAtual">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
-                    @if(ViewBag.BuscaAtual != null)
-                    {
-                        <a asp-action="Index" class="btn btn-outline-secondary">Limpar</a>
-                    }
-                </div>
+<div class="card-table p-4">
+    
+    <!-- CABEÇALHO: Abas de Filtro e Busca -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 nav-tabs-custom">
+        <ul class="nav mb-0">
+            <li class="nav-item"><a class="nav-link active" href="#">Todos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Ativos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Inativos</a></li>
+        </ul>
+        
+        <div class="d-flex gap-3 mb-2">
+            <!-- Formulário de Busca que se conecta com o seu 'termoBusca' do Controller -->
+            <form method="get" action="/Pacientes/Index" class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" name="termoBusca" class="form-control form-control-sm" placeholder="Buscar paciente..." value="@ViewBag.BuscaAtual">
             </form>
-        </div>
-
-        <!-- Tabela de Resultados -->
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-secondary">
-                        <tr>
-                            <th class="ps-4">Nome do Paciente</th>
-                            <th>Idade</th>
-                            <th>Responsável</th>
-                            <th class="text-end pe-4">Ações (Prontuário)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="ps-4 fw-bold text-dark">@item.Nome</td>
-                                    <td>@item.Idade anos</td>
-                                    <td>@(item.NomeMae ?? item.NomePai ?? "Não informado")</td>
-                                    <td class="text-end pe-4">
-                                        <a asp-action="Details" asp-route-id="@item.IdPaciente" class="btn btn-sm btn-info text-white fw-bold shadow-sm rounded-pill px-3">
-                                            <i class="bi bi-folder2-open"></i> Abrir Prontuário
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
-                                    <i class="bi bi-search fs-1 d-block mb-2 opacity-50"></i>
-                                    Nenhum paciente encontrado.
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            
+            <a href="/Pacientes/Create" class="btn btn-primary-custom fw-bold rounded-pill px-4 text-decoration-none">
+                <i class="bi bi-plus-lg me-2"></i> Novo
+            </a>
         </div>
     </div>
+
+    <!-- TABELA DE DADOS DINÂMICA -->
+    <div class="table-responsive">
+        <table class="table table-custom table-borderless">
+            <thead>
+                <tr>
+                    <th style="width: 70px;"></th>
+                    <th>Nome</th>
+                    <th>Idade</th>
+                    <th>Responsável</th>
+                    <th>Último atendimento</th>
+                    <th style="width: 50px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- O C# VAI GERAR UMA LINHA PARA CADA PACIENTE NO BANCO -->
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var paciente in Model)
+                    {
+                        <tr>
+                            <!-- Pega a primeira letra do nome para o Avatar -->
+                            <td><div class="avatar-circle">@(string.IsNullOrEmpty(paciente.Nome) ? "?" : paciente.Nome.Substring(0, 1).ToUpper())</div></td>
+                            
+                            <td class="fw-bold">@paciente.Nome</td>
+                            
+                            <!-- NOTA: Se a sua classe Paciente não tiver esses campos, me avise e nós alteramos! -->
+                            <td class="text-muted">8 anos (Exemplo)</td>
+                            <td class="text-muted">Responsável (Exemplo)</td>
+                            <td class="text-muted">24/05/2026</td>
+                            
+                            <td>
+                                <!-- Botão que já aponta para a sua tela de Details! -->
+                                <a href="/Pacientes/Details/@paciente.IdPaciente" class="btn btn-sm btn-light text-primary rounded-circle" title="Ver Prontuário">
+                                    <i class="bi bi-arrow-right-short fs-5"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                            Nenhum paciente encontrado no sistema.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
 </div>

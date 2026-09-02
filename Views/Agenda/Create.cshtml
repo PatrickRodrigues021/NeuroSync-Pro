@@ -1,71 +1,74 @@
 @model NeuroSync.Models.Agendamento
 
 @{
-    ViewData["Title"] = "Nova Sessão";
+    ViewData["Title"] = "Novo Atendimento";
 }
 
-<div class="container mt-4 mb-5">
-    <h2 class="text-primary"><i class="bi bi-calendar-plus"></i> Agendar Sessão</h2>
-    <p class="text-muted">Marque um novo atendimento preenchendo os dados abaixo.</p>
-    <hr />
+<style>
+    .card-form { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; }
+    .form-label { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #e2e8f0; padding: 12px 16px; background-color: #f8fafc; transition: 0.3s; font-weight: 500; }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); background-color: white; box-shadow: 0 0 0 4px rgba(49, 91, 239, 0.1); }
+</style>
 
-    <div class="card shadow-sm border-0 mt-4" style="max-width: 600px;">
-        <div class="card-body p-4">
+<div class="row">
+    <div class="col-md-8 col-lg-6 mx-auto mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Agendar Atendimento</h3>
+                <p class="text-muted fw-bold">Reserve um horário na agenda.</p>
+            </div>
+            <a href="/Agenda" class="btn btn-light fw-bold text-muted rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i> Voltar</a>
+        </div>
+
+        <div class="card-form p-4 p-md-5">
             <form asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="alert alert-danger fw-bold rounded-3 validation-summary-valid"></div>
                 
-                <!-- CAIXA DE SELEÇÃO DE PACIENTES (Inteligente) -->
                 <div class="mb-4">
-                    <label asp-for="PacienteId" class="control-label fw-bold">Selecione o Paciente *</label>
-                    <select asp-for="PacienteId" id="buscaPaciente" class="form-select" asp-items="ViewBag.Pacientes" required>
-                        <option value="">-- Buscar paciente... --</option>
+                    <label asp-for="PacienteId" class="form-label">Paciente *</label>
+                    <select asp-for="PacienteId" class="form-select" asp-items="ViewBag.Pacientes" required>
+                        <option value="">-- Selecione o Paciente --</option>
                     </select>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label asp-for="DataHora" class="control-label fw-bold">Data e Horário *</label>
-                        <input asp-for="DataHora" type="datetime-local" class="form-control" required />
-                    </div>
-                    
-                    <div class="col-md-6 mb-4">
-                        <label asp-for="TipoSessao" class="control-label fw-bold">Tipo de Sessão</label>
-                        <select asp-for="TipoSessao" class="form-select">
-                            <option value="Intervenção">Intervenção (Rotina)</option>
-                            <option value="Avaliação">Avaliação</option>
-                            <option value="Devolutiva">Devolutiva com os Pais</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="mb-4">
-                    <label asp-for="Observacoes" class="control-label fw-bold">Observações (Opcional)</label>
-                    <textarea asp-for="Observacoes" class="form-control" rows="3" placeholder="Ex: Focar em testes de leitura hoje..."></textarea>
+                    <label asp-for="DataHora" class="form-label">Data e Horário *</label>
+                    <input asp-for="DataHora" type="datetime-local" class="form-control" required />
                 </div>
 
-                <!-- Status escondido -->
-                <input type="hidden" asp-for="Status" value="Agendado" />
+                <!-- CAMPO DE REPETIÇÃO SEMANAL (NOVO) -->
+                <div class="mb-4">
+                    <label class="form-label text-primary"><i class="bi bi-arrow-repeat"></i> Repetição Semanal</label>
+                    <!-- O atributo name="semanasRepeticao" conecta com o C# do Controller -->
+                    <select name="semanasRepeticao" class="form-select border-primary bg-light">
+                        <option value="1">Não se repete (Sessão Única)</option>
+                        <option value="4">Repetir toda semana (1 Mês - 4 sessões)</option>
+                        <option value="12">Repetir toda semana (3 Meses - 12 sessões)</option>
+                        <option value="24">Repetir toda semana (6 Meses - 24 sessões)</option>
+                    </select>
+                    <div class="form-text text-muted small mt-2">
+                        <i class="bi bi-info-circle"></i> O sistema criará as sessões de forma independente. Você poderá alterar o horário ou cancelar uma semana específica sem afetar as outras.
+                    </div>
+                </div>
 
-                <div class="text-end mt-4">
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary me-2">Cancelar</a>
-                    <button type="submit" class="btn btn-success fw-bold"><i class="bi bi-check-lg"></i> Confirmar Agendamento</button>
+                <!-- Se você tiver outros campos no model Agendamento (como Observação, Status), 
+                     você pode adicioná-los aqui embaixo -->
+
+                <div class="d-flex justify-content-end gap-3 pt-4 border-top mt-5">
+                    <a href="/Agenda" class="btn btn-light fw-bold px-4 rounded-pill text-muted">Cancelar</a>
+                    <button type="submit" class="btn btn-primary fw-bold px-5 rounded-pill shadow-sm">
+                        <i class="bi bi-check-lg me-2"></i> Confirmar Agendamento
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- SCRIPT QUE TRANSFORMA A CAIXINHA EM UMA BARRA DE PESQUISA -->
 @section Scripts {
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#buscaPaciente').select2({
-                placeholder: "Digite o nome da criança para buscar...",
-                allowClear: true,
-                width: '100%' 
-            });
-        });
-    </script>
+    <style>
+        .validation-summary-valid { display: none; }
+    </style>
 }

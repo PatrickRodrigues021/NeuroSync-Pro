@@ -11,7 +11,8 @@
         :root {
             --navy: #071A3A;
             --primary: #315BEF;
-            --bg-light: #F4F7FE;
+            /* Mudei o fundo para um tom "gelo" elegante que dá contraste com cartões brancos */
+            --bg-light: #f1f5f9; 
             --text-dark: #2B3674;
             --text-muted: #A3AED0;
         }
@@ -60,33 +61,8 @@
             min-height: 100vh; 
             padding: 30px 40px; 
         }
-
-        .top-bar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 40px; 
-        }
-
-        .search-bar { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 10px 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            width: 350px; 
-            box-shadow: 0 2px 15px rgba(0,0,0,0.02); 
-        }
-
-        .search-bar input { 
-            border: none; 
-            outline: none; 
-            background: transparent; 
-            width: 100%; 
-            font-size: 0.9rem;
-            color: var(--text-dark);
-        }
+        
+        /* Apaguei o CSS da Top-bar e da Search-bar antigas para limpar o código */
     </style>
 </head>
 <body>
@@ -101,32 +77,54 @@
         
         <!-- Links de Navegação -->
         <nav class="flex-grow-1">
-            <a href="/Home" class="nav-link-custom active"><i class="bi bi-grid-1x2-fill nav-icon"></i> Dashboard</a>
-            <a href="/Pacientes" class="nav-link-custom"><i class="bi bi-person nav-icon"></i> Pacientes</a>
-            <a href="/Agenda" class="nav-link-custom"><i class="bi bi-calendar-event nav-icon"></i> Agenda</a>
-            <a href="/Prontuarios" class="nav-link-custom"><i class="bi bi-file-earmark-medical nav-icon"></i> Prontuários</a>
-            <a href="/Terapias" class="nav-link-custom"><i class="bi bi-puzzle nav-icon"></i> Terapias</a>
-            <a href="/Relatorios" class="nav-link-custom"><i class="bi bi-bar-chart nav-icon"></i> Relatórios</a>
-            <a href="/Financeiro" class="nav-link-custom"><i class="bi bi-wallet2 nav-icon"></i> Financeiro</a>
+            @{
+                // O C# descobre em qual tela (Controller) o usuário está agora
+                var controllerAtual = ViewContext.RouteData.Values["controller"]?.ToString();
+            }
+
+            <a href="/Home" class="nav-link-custom @(controllerAtual == "Home" ? "active" : "")">
+                <i class="bi bi-grid-1x2-fill nav-icon"></i> Dashboard
+            </a>
+            
+            <a href="/Pacientes" class="nav-link-custom @(controllerAtual == "Pacientes" ? "active" : "")">
+                <i class="bi bi-person nav-icon"></i> Pacientes
+            </a>
+            
+            <a href="/Agenda" class="nav-link-custom @(controllerAtual == "Agenda" ? "active" : "")">
+                <i class="bi bi-calendar-event nav-icon"></i> Agenda
+            </a>
+            
+            <a href="/Prontuarios" class="nav-link-custom @(controllerAtual == "Prontuarios" ? "active" : "")">
+                <i class="bi bi-file-earmark-medical nav-icon"></i> Prontuários
+            </a>
+            
+            <a href="/Terapias" class="nav-link-custom @(controllerAtual == "Terapias" ? "active" : "")">
+                <i class="bi bi-puzzle nav-icon"></i> Terapias
+            </a>
+            
+            <a href="/Relatorios" class="nav-link-custom @(controllerAtual == "Relatorios" ? "active" : "")">
+                <i class="bi bi-bar-chart nav-icon"></i> Relatórios
+            </a>
+            
+            <a href="/Financeiro" class="nav-link-custom @(controllerAtual == "Financeiro" ? "active" : "")">
+                <i class="bi bi-wallet2 nav-icon"></i> Financeiro
+            </a>
         </nav>
 
-        <!-- Links de Rodapé do Menu (O botão Sair aponta para o seu Controller!) -->
+        <!-- Links de Rodapé -->
         <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 px-2">
-            <a href="/Configuracoes" class="nav-link-custom"><i class="bi bi-gear nav-icon"></i> Configurações</a>
-            <a href="/Login/Sair" class="nav-link-custom"><i class="bi bi-box-arrow-left nav-icon text-danger"></i> Sair</a>
+            <a href="/Configuracoes" class="nav-link-custom @(controllerAtual == "Configuracoes" ? "active" : "")">
+                <i class="bi bi-gear nav-icon"></i> Configurações
+            </a>
+            <a href="/Login/Sair" class="nav-link-custom">
+                <i class="bi bi-box-arrow-left nav-icon text-danger"></i> Sair
+            </a>
         </div>
     </div>
 
-    <!-- MAIN CONTENT (Onde as telas aparecem) -->
+    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <!-- Cabeçalho (Título e Busca) -->
-        <div class="top-bar">
-            <h3 class="fw-bold mb-0" style="color: var(--text-dark);">@ViewData["Title"]</h3>
-            <div class="search-bar">
-                <i class="bi bi-search text-muted"></i>
-                <input type="text" placeholder="Buscar pacientes, prontuários..." />
-            </div>
-        </div>
+        <!-- REMOVI A TOP-BAR AUTOMÁTICA DAQUI! Agora cada página tem seu próprio título. -->
         
         <!-- O miolo de cada página é injetado aqui dentro -->
         <main role="main">

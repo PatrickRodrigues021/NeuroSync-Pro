@@ -50,9 +50,38 @@
                             <input asp-for="Telefone" class="form-control" required />
                         </div>
 
-                        <div class="mb-4">
-                            <label asp-for="Endereco" class="form-label fw-bold">Endereço Completo</label>
-                            <textarea asp-for="Endereco" class="form-control" rows="2"></textarea>
+                        <!-- DADOS DE ENDEREÇO ATUALIZADOS -->
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Cep" class="control-label">CEP</label>
+                                <input asp-for="Cep" class="form-control" />
+                            </div>
+                            <div class="col-md-7 mb-3">
+                                <label asp-for="Logradouro" class="control-label">Logradouro (Rua, Av.)</label>
+                                <input asp-for="Logradouro" class="form-control" />
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="Numero" class="control-label">Número</label>
+                                <input asp-for="Numero" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Complemento" class="control-label">Complemento</label>
+                                <input asp-for="Complemento" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Bairro" class="control-label">Bairro</label>
+                                <input asp-for="Bairro" class="form-control" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Cidade" class="control-label">Cidade</label>
+                                <input asp-for="Cidade" class="form-control" />
+                            </div>
+                            <div class="col-md-1 mb-3">
+                                <label asp-for="Estado" class="control-label">UF</label>
+                                <input asp-for="Estado" class="form-control" />
+                            </div>
                         </div>
                     </div>
 

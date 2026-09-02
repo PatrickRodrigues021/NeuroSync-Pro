@@ -1,188 +1,181 @@
 @model NeuroSync.Models.Paciente
 
 @{
-    ViewData["Title"] = "Prontuário de " + Model.Nome;
+    ViewData["Title"] = "Prontuário do Paciente";
 }
 
-<div class="container mt-4 mb-5">
+<style>
+    /* Estilos Premium para o Prontuário */
+    .prontuario-container { background-color: #f8fafc; padding-bottom: 2rem; }
     
-    <!-- Cabeçalho do Prontuário -->
+    /* Header do Paciente */
+    .patient-header-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); padding: 24px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+    .avatar-wrapper { width: 80px; height: 80px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .patient-name { font-weight: 700; color: var(--text-dark); font-size: 1.25rem; margin-bottom: 4px; }
+    .patient-meta { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+    
+    .info-group { display: flex; flex-direction: column; }
+    .info-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+    .info-value { font-weight: 600; color: var(--text-dark); font-size: 0.95rem; }
+
+    /* Customização das Abas (Tabs) */
+    .nav-tabs-custom { border-bottom: 2px solid #e2e8f0; gap: 1rem; margin-bottom: 24px; }
+    .nav-tabs-custom .nav-link { border: none; color: var(--text-muted); font-weight: 600; padding: 12px 4px; background: transparent; position: relative; margin-bottom: -2px; }
+    .nav-tabs-custom .nav-link:hover { color: var(--primary); }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); background: transparent; }
+    .nav-tabs-custom .nav-link.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background-color: var(--primary); border-radius: 2px 2px 0 0; }
+
+    /* Cards Internos (Resumo) */
+    .dashboard-card { background: white; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); padding: 24px; height: 100%; }
+    .card-title-custom { font-weight: 700; color: var(--text-dark); font-size: 1rem; margin-bottom: 20px; }
+    
+    /* Linha do Tempo (Evoluções mockadas para o design) */
+    .timeline-item { position: relative; padding-left: 20px; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 50%; background-color: #93c5fd; }
+    .timeline-date { font-size: 0.8rem; color: #64748b; font-weight: 600; margin-bottom: 4px; }
+    .timeline-text { font-size: 0.9rem; color: #334155; line-height: 1.5; }
+
+    /* Próximos Atendimentos */
+    .appointment-item { margin-bottom: 16px; }
+    .appointment-datetime { font-size: 0.85rem; color: #64748b; font-weight: 600; }
+    .appointment-type { font-size: 0.95rem; color: var(--text-dark); font-weight: 600; }
+</style>
+
+<div class="prontuario-container">
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-secondary mb-0"><i class="bi bi-person-vcard text-primary me-2"></i> @Model.Nome</h2>
-            <small class="text-muted ms-5">Cadastrado em: @Model.CriadoEm.ToString("dd/MM/yyyy")</small>
-        </div>
-        <a asp-action="Index" class="btn btn-outline-secondary fw-bold shadow-sm">
-            <i class="bi bi-arrow-left"></i> Voltar
-        </a>
+        <h3 class="fw-bold mb-0" style="color: var(--text-dark);">Prontuário do Paciente</h3>
+        <a href="/Pacientes" class="btn btn-light fw-bold text-muted rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i> Voltar</a>
     </div>
 
-    <!-- NAVEGAÇÃO DAS ABAS -->
-    <ul class="nav nav-tabs" id="prontuarioTabs" role="tablist">
+    <!-- CABEÇALHO DO PACIENTE (Baseado no Print) -->
+    <div class="patient-header-card">
+        <!-- Avatar SVG Genérico -->
+        <div class="avatar-wrapper">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        
+        <div class="flex-grow-1">
+            <h2 class="patient-name">@Model.Nome</h2>
+            <div class="patient-meta">
+                @Model.Idade anos • @Model.DataNascimento.ToString("dd/MM/yyyy") 
+                <br />
+                Responsável: @(string.IsNullOrEmpty(Model.NomeMae) ? (string.IsNullOrEmpty(Model.NomePai) ? "Não informado" : Model.NomePai) : Model.NomeMae)
+            </div>
+        </div>
+
+        <div class="d-flex gap-5 ms-auto pe-3 border-start ps-5">
+            <div class="info-group">
+                <span class="info-label">Criado em</span>
+                <span class="info-value">@Model.CriadoEm.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="info-group">
+                <span class="info-label">Status</span>
+                <span class="info-value text-success"><i class="bi bi-circle-fill small me-1"></i> Ativo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGAÇÃO POR ABAS -->
+    <ul class="nav nav-tabs nav-tabs-custom" id="prontuarioTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab">
-                <i class="bi bi-info-circle text-primary"></i> Dados e Anamnese
-            </button>
+            <button class="nav-link active" id="resumo-tab" data-bs-toggle="tab" data-bs-target="#resumo" type="button" role="tab">Resumo</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#evolucao" type="button" role="tab">
-                <i class="bi bi-journal-medical text-success"></i> Evoluções
-            </button>
+            <button class="nav-link" id="anamnese-tab" data-bs-toggle="tab" data-bs-target="#anamnese" type="button" role="tab">Anamnese</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#agenda" type="button" role="tab">
-                <i class="bi bi-calendar-event text-warning"></i> Próximos Atendimentos
-            </button>
+            <button class="nav-link" id="evolucao-tab" data-bs-toggle="tab" data-bs-target="#evolucao" type="button" role="tab">Evolução</button>
         </li>
-        <!-- CÓDIGO NOVO: Botão da Aba de Arquivos -->
         <li class="nav-item" role="presentation">
-            <button class="nav-link fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#arquivos" type="button" role="tab">
-                <i class="bi bi-file-earmark-pdf text-danger"></i> Exames e Arquivos
-            </button>
+            <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab">Atendimentos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="documentos-tab" data-bs-toggle="tab" data-bs-target="#documentos" type="button" role="tab">Documentos</button>
         </li>
     </ul>
 
     <!-- CONTEÚDO DAS ABAS -->
-    <div class="tab-content bg-white border border-top-0 p-4 rounded-bottom shadow-sm" id="prontuarioTabsContent">
+    <div class="tab-content" id="prontuarioTabsContent">
         
-        <!-- ABA 1: DADOS PESSOAIS E CLÍNICOS -->
-        <div class="tab-pane fade show active" id="info" role="tabpanel">
-            <div class="row">
-                <div class="col-md-6 border-end">
-                    <h5 class="text-primary mb-3">Informações Pessoais</h5>
-                    <p class="mb-2"><strong>Idade:</strong> @Model.Idade anos</p>
-                    <p class="mb-2"><strong>Responsável:</strong> @(Model.NomeMae ?? Model.NomePai ?? "Não informado")</p>
-                    <p class="mb-2"><strong>Telefone:</strong> @Model.Telefone</p>
-                    <p class="mb-2"><strong>Endereço:</strong> @(Model.Endereco ?? "Não cadastrado")</p>
-                </div>
-                <div class="col-md-6 ps-md-4">
-                    <h5 class="text-primary mb-3">Quadro Clínico (Anamnese)</h5>
-                    <p class="mb-2 text-danger"><strong>Diagnóstico:</strong> @(Model.DiagnosticoPrincipal ?? "Pendente de avaliação")</p>
-                    <p class="mb-2"><strong>Medicamentos:</strong> @(Model.MedicamentosContinuos ?? "Nenhum informado")</p>
-                    <p class="mb-2 text-success"><strong>Metas (Curto Prazo):</strong> @(Model.MetasCurtoPrazo ?? "A definir")</p>
-                    <p class="mb-2 text-primary"><strong>Metas (Longo Prazo):</strong> @(Model.MetasLongoPrazo ?? "A definir")</p>
-                </div>
-            </div>
-            <hr class="mt-4">
-            <a asp-action="Edit" asp-route-id="@Model.IdPaciente" class="btn btn-warning fw-bold text-dark">
-                <i class="bi bi-pencil-square"></i> Atualizar Ficha e Anamnese
-            </a>
-        </div>
-
-        <!-- ABA 2: EVOLUÇÕES DA SESSÃO -->
-        <div class="tab-pane fade" id="evolucao" role="tabpanel">
-            
-            <!-- Formulário Rápido para nova evolução -->
-            <form asp-action="AdicionarEvolucao" method="post" class="mb-4 bg-light p-3 rounded border">
-                <input type="hidden" name="PacienteId" value="@Model.IdPaciente" />
-                <label class="fw-bold mb-2 text-success"><i class="bi bi-plus-circle"></i> Nova Evolução da Sessão</label>
-                <textarea name="Anotacao" class="form-control mb-3 shadow-sm" rows="3" placeholder="Descreva como foi o atendimento, evolução do paciente e observações..." required></textarea>
-                <button type="submit" class="btn btn-success fw-bold">Salvar Anotação</button>
-            </form>
-
-            <!-- Histórico de Evoluções (Timeline) -->
-            <h6 class="fw-bold text-secondary border-bottom pb-2 mb-3">Histórico de Atendimentos</h6>
-            
-            @if (ViewBag.Evolucoes != null && ViewBag.Evolucoes.Count > 0)
-            {
-                <div class="mt-3">
-                    @foreach (var evo in ViewBag.Evolucoes)
-                    {
-                        <div class="card mb-3 border-0 shadow-sm border-start border-4 border-success bg-light">
-                            <div class="card-body py-2 px-3">
-                                <small class="text-muted fw-bold d-block mb-1">
-                                    <i class="bi bi-clock-history"></i> Registrado em: @evo.DataRegistro.ToString("dd/MM/yyyy 'às' HH:mm")
-                                </small>
-                                <p class="mb-0" style="white-space: pre-wrap;">@evo.Anotacao</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="text-center text-muted py-4">
-                    <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
-                    Nenhuma evolução registrada para este paciente ainda.
-                </div>
-            }
-        </div>
-
-        <!-- ABA 3: AGENDA -->
-        <div class="tab-pane fade" id="agenda" role="tabpanel">
-            <h5 class="text-primary mb-3">Próximos Atendimentos</h5>
-            @if (ViewBag.Agendamentos != null && ViewBag.Agendamentos.Count > 0)
-            {
-                <div class="list-group shadow-sm">
-                    @foreach(var ag in ViewBag.Agendamentos)
-                    {
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="fw-bold"><i class="bi bi-calendar me-2"></i> @ag.DataHora.ToString("dd/MM/yyyy") às @ag.DataHora.ToString("HH:mm")</span>
-                            <span class="badge bg-warning text-dark rounded-pill">@ag.Status</span>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="text-center text-muted py-4">
-                    <i class="bi bi-calendar2-x fs-2 d-block mb-2 opacity-50"></i>
-                    Nenhum agendamento futuro marcado para este paciente.
-                </div>
-            }
-        </div>
-
-        <!-- CÓDIGO NOVO: ABA 4: ARQUIVOS E EXAMES -->
-        <div class="tab-pane fade" id="arquivos" role="tabpanel">
-            <div class="row">
+        <!-- ABA 1: RESUMO (Ativa) -->
+        <div class="tab-pane fade show active" id="resumo" role="tabpanel">
+            <div class="row g-4">
                 
-                <!-- Formulário de Upload -->
-                <div class="col-md-5 border-end pe-md-4">
-                    <h6 class="text-primary mb-3"><i class="bi bi-cloud-upload"></i> Anexar Novo Documento</h6>
-                    <form asp-action="UploadArquivo" method="post" enctype="multipart/form-data" class="bg-light p-3 rounded border">
-                        <input type="hidden" name="PacienteId" value="@Model.IdPaciente" />
+                <!-- Coluna 1: Resumo Clínico (Vem do seu Banco de Dados!) -->
+                <div class="col-md-4">
+                    <div class="dashboard-card">
+                        <h5 class="card-title-custom">Resumo clínico</h5>
                         
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Selecione o PDF ou Imagem</label>
-                            <input type="file" name="arquivo" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required />
+                        <div class="mb-4">
+                            <span class="info-label text-primary">Diagnóstico</span>
+                            <p class="mt-1 mb-0" style="font-size: 0.95rem; color: #334155;">
+                                @(string.IsNullOrEmpty(Model.DiagnosticoPrincipal) ? "Nenhum diagnóstico registrado." : Model.DiagnosticoPrincipal)
+                            </p>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary btn-sm fw-bold w-100 shadow-sm">
-                            <i class="bi bi-upload"></i> Salvar no Prontuário
-                        </button>
-                    </form>
+
+                        <div>
+                            <span class="info-label text-primary">Objetivos principais (Curto Prazo)</span>
+                            <p class="mt-1 mb-0" style="font-size: 0.95rem; color: #334155;">
+                                @(string.IsNullOrEmpty(Model.MetasCurtoPrazo) ? "Nenhuma meta definida." : Model.MetasCurtoPrazo)
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Lista de Arquivos Salvos -->
-                <div class="col-md-7 ps-md-4">
-                    <h6 class="text-secondary mb-3"><i class="bi bi-folder2-open"></i> Arquivos do Paciente</h6>
-                    
-                    @if (ViewBag.Anexos != null && ViewBag.Anexos.Count > 0)
-                    {
-                        <div class="list-group shadow-sm">
-                            @foreach(var anexo in ViewBag.Anexos)
-                            {
-                                <a href="@anexo.CaminhoArquivo" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-file-earmark-text fs-4 text-danger me-2 align-middle"></i>
-                                        <span class="fw-bold text-dark small">@anexo.NomeArquivo</span>
-                                        <div class="text-muted mt-1" style="font-size: 0.75rem;">Enviado em: @anexo.DataUpload.ToString("dd/MM/yyyy HH:mm")</div>
-                                    </div>
-                                    <i class="bi bi-box-arrow-up-right text-muted"></i>
-                                </a>
-                            }
+                <!-- Coluna 2: Últimas evoluções (Visual Mockado para o Design) -->
+                <div class="col-md-5">
+                    <div class="dashboard-card">
+                        <h5 class="card-title-custom">Últimas evoluções</h5>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-date">24/05/2026</div>
+                            <div class="timeline-text">Evolução positiva na articulação em posição inicial. Participação ativa nas atividades lúdicas.</div>
                         </div>
-                    }
-                    else
-                    {
-                        <div class="text-center text-muted py-4 mt-2 bg-light rounded" style="border: 1px dashed #ccc;">
-                            <i class="bi bi-file-earmark-x fs-2 d-block mb-2 opacity-50"></i>
-                            <small>Nenhum documento anexado ainda.</small>
+                        <div class="timeline-item">
+                            <div class="timeline-date">16/05/2026</div>
+                            <div class="timeline-text">Ampliação de vocabulário. Iniciada atividade de consciência fonológica com blocos.</div>
                         </div>
-                    }
+                    </div>
                 </div>
+
+                <!-- Coluna 3: Próximos Atendimentos (Visual Mockado para o Design) -->
+                <div class="col-md-3">
+                    <div class="dashboard-card d-flex flex-column">
+                        <h5 class="card-title-custom">Próximos atendimentos</h5>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-datetime">26/05/2026 - 09:00</div>
+                            <div class="appointment-type">Sessão de Rotina</div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-datetime">30/05/2026 - 10:00</div>
+                            <div class="appointment-type">Sessão de Rotina</div>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            <a href="/Agenda" class="btn btn-primary w-100 fw-bold rounded-pill" style="background: var(--primary);">Ver agenda completa</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+
+        <!-- ABA 2: ANAMNESE (Vazia por enquanto) -->
+        <div class="tab-pane fade" id="anamnese" role="tabpanel">
+            <div class="dashboard-card text-center py-5">
+                <i class="bi bi-file-earmark-medical text-muted" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 fw-bold text-muted">Anamnese</h5>
+                <p class="text-muted">As informações da anamnese detalhada aparecerão aqui.</p>
+                <a href="/Pacientes/Edit/@Model.IdPaciente" class="btn btn-outline-primary fw-bold rounded-pill mt-2">Editar Dados Clínicos</a>
+            </div>
+        </div>
+
+        <!-- As outras abas seguem a mesma lógica (Evolução, Documentos, etc) -->
+        <div class="tab-pane fade" id="evolucao" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
+        <div class="tab-pane fade" id="atendimentos" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
+        <div class="tab-pane fade" id="documentos" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
 
     </div>
 </div>

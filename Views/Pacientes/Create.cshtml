@@ -4,171 +4,260 @@
     ViewData["Title"] = "Cadastrar Novo Paciente";
 }
 
-<div class="container mt-4 mb-5">
-    <h2>Cadastrar Novo Paciente</h2>
-    <p class="text-muted">Preencha os dados abaixo para iniciar o acompanhamento.</p>
-    <hr />
+<style>
+    /* Estilos Premium para o Formulário */
+    .card-form { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; }
+    .section-title { color: var(--text-dark); font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    
+    .form-label { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control { border-radius: 8px; border: 1px solid #e2e8f0; padding: 12px 16px; background-color: #f8fafc; transition: 0.3s; color: var(--text-dark); font-weight: 500; }
+    .form-control:focus { border-color: var(--primary); background-color: white; box-shadow: 0 0 0 4px rgba(49, 91, 239, 0.1); }
+    .form-control[readonly] { background-color: #e2e8f0; opacity: 0.7; }
+    /* Esconde a barra vermelha de erros quando não há erros */
+    .validation-summary-valid { display: none; }
+</style>
 
-    <form asp-action="Create" method="post">
-
-        <div asp-validation-summary="All" class="alert alert-danger fw-bold"></div>
+<div class="row">
+    <div class="col-lg-10 col-xl-9 mx-auto mt-4 mb-5">
         
-        <!-- SESSÃO 1: DADOS DO PACIENTE E ESCOLARES -->
-        <h4 class="mt-4 mb-3 text-primary">Dados do Paciente (Criança / Adolescente)</h4>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="Nome" class="control-label">Nome Completo *</label>
-                <input asp-for="Nome" class="form-control" placeholder="Nome do paciente" required />
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Cadastrar Novo Paciente</h3>
+                <p class="text-muted fw-bold">Preencha os dados abaixo para iniciar o acompanhamento.</p>
             </div>
-            <div class="col-md-3 mb-3">
-                <label asp-for="Cpf" class="control-label">CPF (se houver)</label>
-                <input asp-for="Cpf" class="form-control" placeholder="000.000.000-00" />
-            </div>
-            <div class="col-md-3 mb-3">
-                <label asp-for="Telefone" class="control-label">Telefone Próprio</label>
-                <input asp-for="Telefone" class="form-control" placeholder="(00) 00000-0000" />
-            </div>
+            <a href="/Pacientes" class="btn btn-light fw-bold text-muted rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i> Voltar</a>
         </div>
 
-        <div class="row">
-            <!-- ID adicionado ao campo de data para o Javascript encontrar -->
-            <div class="col-md-3 mb-3">
-                <label asp-for="DataNascimento" class="control-label">Data de Nascimento *</label>
-                <input asp-for="DataNascimento" type="date" class="form-control" id="campoDataNascimento" required />
-            </div>
-            <!-- Campo Idade como Somente Leitura (readonly), pois será preenchido pelo JS -->
-            <div class="col-md-2 mb-3">
-                <label asp-for="Idade" class="control-label">Idade</label>
-                <input asp-for="Idade" type="number" class="form-control bg-light" id="campoIdade" readonly />
-            </div>
-            <div class="col-md-5 mb-3">
-                <label asp-for="EscolaEstuda" class="control-label">Escola onde estuda</label>
-                <input asp-for="EscolaEstuda" class="form-control" placeholder="Nome da instituição" />
-            </div>
-            <div class="col-md-2 mb-3">
-                <label asp-for="Serie" class="control-label">Série/Ano</label>
-                <input asp-for="Serie" class="form-control" placeholder="Ex: 5º Ano" />
-            </div>
-        </div>
+        <div class="card-form p-4 p-md-5">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="alert alert-danger fw-bold rounded-3"></div>
+                
+                <!-- ========================================== -->
+                <!-- SESSÃO 1: DADOS DO PACIENTE E ESCOLARES    -->
+                <!-- ========================================== -->
+                <h5 class="section-title text-primary border-bottom pb-2"><i class="bi bi-person-badge"></i> Dados do Paciente (Criança / Adolescente)</h5>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Nome" class="form-label">Nome Completo *</label>
+                        <input asp-for="Nome" class="form-control" placeholder="Nome do paciente" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Cpf" class="form-label">CPF (se houver)</label>
+                        <input asp-for="Cpf" class="form-control" placeholder="000.000.000-00" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Telefone" class="form-label">Telefone Próprio</label>
+                        <input asp-for="Telefone" class="form-control" placeholder="(00) 00000-0000" />
+                    </div>
+                </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label asp-for="NomeProfessora" class="control-label">Nome da Professora</label>
-                <input asp-for="NomeProfessora" class="form-control" />
-            </div>
-            <div class="col-md-6 mb-3">
-                <label asp-for="NomePedagogaPsicologa" class="control-label">Pedagoga / Psicóloga da Escola</label>
-                <input asp-for="NomePedagogaPsicologa" class="form-control" />
-            </div>
-        </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label asp-for="DataNascimento" class="form-label">Data de Nascimento *</label>
+                        <input asp-for="DataNascimento" type="date" class="form-control" id="campoDataNascimento" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Idade" class="form-label">Idade</label>
+                        <input asp-for="Idade" type="number" class="form-control" id="campoIdade" readonly />
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="EscolaEstuda" class="form-label">Escola onde estuda</label>
+                        <input asp-for="EscolaEstuda" class="form-control" placeholder="Nome da instituição" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Serie" class="form-label">Série/Ano</label>
+                        <input asp-for="Serie" class="form-control" placeholder="Ex: 5º Ano" />
+                    </div>
+                </div>
 
-        <!-- SESSÃO 2: DADOS FAMILIARES -->
-        <h4 class="mt-5 mb-3 text-primary">Dados Familiares e Endereço</h4>
-        
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <label asp-for="Endereco" class="control-label">Endereço Residencial (Família)</label>
-                <input asp-for="Endereco" class="form-control" placeholder="Rua, Número, Bairro, Cidade" />
-            </div>
-        </div>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-6">
+                        <label asp-for="NomeProfessora" class="form-label">Nome da Professora</label>
+                        <input asp-for="NomeProfessora" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="NomePedagogaPsicologa" class="form-label">Pedagoga / Psicóloga da Escola</label>
+                        <input asp-for="NomePedagogaPsicologa" class="form-control" />
+                    </div>
+                </div>
 
-        <!-- Dados da Mãe -->
-        <h5 class="text-secondary mt-3">Dados da Mãe</h5>
-        <div class="row">
-            <div class="col-md-5 mb-3">
-                <label asp-for="NomeMae" class="control-label">Nome da Mãe</label>
-                <input asp-for="NomeMae" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="CpfMae" class="control-label">CPF</label>
-                <input asp-for="CpfMae" class="form-control" />
-            </div>
-            <div class="col-md-3 mb-3">
-                <label asp-for="DataNascimentoMae" class="control-label">Data Nasc.</label>
-                <input asp-for="DataNascimentoMae" type="date" class="form-control" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <label asp-for="TelefoneMae" class="control-label">Telefone</label>
-                <input asp-for="TelefoneMae" class="form-control" />
-            </div>
-            <div class="col-md-5 mb-3">
-                <label asp-for="EmailMae" class="control-label">E-mail</label>
-                <input asp-for="EmailMae" type="email" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="ProfissaoMae" class="control-label">Profissão</label>
-                <input asp-for="ProfissaoMae" class="form-control" />
-            </div>
-        </div>
+                <!-- ========================================== -->
+                <!-- SESSÃO 2: ENDEREÇO (VIA CEP)               -->
+                <!-- ========================================== -->
+                <h5 class="section-title text-primary border-bottom pb-2"><i class="bi bi-geo-alt"></i> Endereço Residencial</h5>
+                <div class="row g-3 mb-5">
+                    
+                    <div class="col-md-3">
+                        <label class="form-label">CEP *</label>
+                        <div class="position-relative">
+                            <!-- Nota: Aqui usamos 'name' direto, presumindo que você vai atualizar o Model. Se já tiver atualizado, pode usar 'asp-for="Cep"' -->
+                            <input type="text" id="Cep" name="Cep" class="form-control" placeholder="00000-000" maxlength="9" required>
+                            <div id="loadingCep" class="spinner-border spinner-border-sm text-primary position-absolute d-none" style="right: 15px; top: 15px;" role="status"></div>
+                        </div>
+                    </div>
 
-        <hr class="my-4"/>
+                    <div class="col-md-7">
+                        <label class="form-label">Logradouro (Rua, Av.) *</label>
+                        <input type="text" id="Logradouro" name="Logradouro" class="form-control" required>
+                    </div>
 
-        <!-- Dados do Pai -->
-        <h5 class="text-secondary">Dados do Pai</h5>
-        <div class="row">
-            <div class="col-md-5 mb-3">
-                <label asp-for="NomePai" class="control-label">Nome do Pai</label>
-                <input asp-for="NomePai" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="CpfPai" class="control-label">CPF</label>
-                <input asp-for="CpfPai" class="form-control" />
-            </div>
-            <div class="col-md-3 mb-3">
-                <label asp-for="DataNascimentoPai" class="control-label">Data Nasc.</label>
-                <input asp-for="DataNascimentoPai" type="date" class="form-control" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <label asp-for="TelefonePai" class="control-label">Telefone</label>
-                <input asp-for="TelefonePai" class="form-control" />
-            </div>
-            <div class="col-md-5 mb-3">
-                <label asp-for="EmailPai" class="control-label">E-mail</label>
-                <input asp-for="EmailPai" type="email" class="form-control" />
-            </div>
-            <div class="col-md-4 mb-3">
-                <label asp-for="ProfissaoPai" class="control-label">Profissão</label>
-                <input asp-for="ProfissaoPai" class="form-control" />
-            </div>
-        </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Número *</label>
+                        <input type="text" id="Numero" name="Numero" class="form-control" required>
+                    </div>
 
-        <!-- BOTÕES -->
-        <div class="form-group mt-5 mb-5 text-end">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg me-2">Cancelar</a>
-            <button type="submit" class="btn btn-primary btn-lg px-5">Salvar Cadastro Completo</button>
+                    <div class="col-md-4">
+                        <label class="form-label">Complemento</label>
+                        <input type="text" id="Complemento" name="Complemento" class="form-control" placeholder="Apto, Bloco, Casa">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Bairro *</label>
+                        <input type="text" id="Bairro" name="Bairro" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Cidade *</label>
+                        <input type="text" id="Cidade" name="Cidade" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-1">
+                        <label class="form-label">UF *</label>
+                        <input type="text" id="Estado" name="Estado" class="form-control" maxlength="2" required>
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- SESSÃO 3: DADOS FAMILIARES                 -->
+                <!-- ========================================== -->
+                <h5 class="section-title text-primary border-bottom pb-2"><i class="bi bi-people"></i> Dados Familiares</h5>
+                
+                <!-- Dados da Mãe -->
+                <h6 class="fw-bold text-secondary mt-4 mb-3">Dados da Mãe</h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5">
+                        <label asp-for="NomeMae" class="form-label">Nome da Mãe</label>
+                        <input asp-for="NomeMae" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CpfMae" class="form-label">CPF</label>
+                        <input asp-for="CpfMae" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="DataNascimentoMae" class="form-label">Data Nasc.</label>
+                        <input asp-for="DataNascimentoMae" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label asp-for="TelefoneMae" class="form-label">Telefone</label>
+                        <input asp-for="TelefoneMae" class="form-control" />
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="EmailMae" class="form-label">E-mail</label>
+                        <input asp-for="EmailMae" type="email" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ProfissaoMae" class="form-label">Profissão</label>
+                        <input asp-for="ProfissaoMae" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Dados do Pai -->
+                <h6 class="fw-bold text-secondary mt-4 mb-3">Dados do Pai</h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5">
+                        <label asp-for="NomePai" class="form-label">Nome do Pai</label>
+                        <input asp-for="NomePai" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="CpfPai" class="form-label">CPF</label>
+                        <input asp-for="CpfPai" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="DataNascimentoPai" class="form-label">Data Nasc.</label>
+                        <input asp-for="DataNascimentoPai" type="date" class="form-control" />
+                    </div>
+                </div>
+                <div class="row g-3 mb-5">
+                    <div class="col-md-3">
+                        <label asp-for="TelefonePai" class="form-label">Telefone</label>
+                        <input asp-for="TelefonePai" class="form-control" />
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="EmailPai" class="form-label">E-mail</label>
+                        <input asp-for="EmailPai" type="email" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ProfissaoPai" class="form-label">Profissão</label>
+                        <input asp-for="ProfissaoPai" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- BOTÕES -->
+                <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                    <a asp-controller="Pacientes" asp-action="Index" class="btn btn-light fw-bold px-4 rounded-pill text-muted">Cancelar</a>
+                    <button type="submit" class="btn btn-primary fw-bold px-5 rounded-pill shadow-sm">
+                        <i class="bi bi-check-lg me-2"></i> Salvar Cadastro Completo
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
-<!-- SCRIPT PARA CALCULAR A IDADE AUTOMATICAMENTE -->
 @section Scripts {
     <script>
-        // Fica "escutando" o campo Data de Nascimento
+        // ==========================================
+        // 1. SCRIPT DE CÁLCULO DE IDADE (Seu código original)
+        // ==========================================
         document.getElementById('campoDataNascimento').addEventListener('change', function () {
-            var dataSelecionada = new Date(this.value); // Pega a data digitada
-            
-            // Verifica se é uma data válida
+            var dataSelecionada = new Date(this.value);
             if (!isNaN(dataSelecionada.getTime())) {
                 var dataAtual = new Date();
                 var idade = dataAtual.getFullYear() - dataSelecionada.getFullYear();
                 var mes = dataAtual.getMonth() - dataSelecionada.getMonth();
-                
-                // Se ainda não chegou o mês do aniversário, ou se é o mês mas o dia não chegou, diminui 1 ano
                 if (mes < 0 || (mes === 0 && dataAtual.getDate() < dataSelecionada.getDate())) {
                     idade--;
                 }
-                
-                // Joga o resultado no campo de Idade
                 document.getElementById('campoIdade').value = idade;
             } else {
-                // Se a data for apagada, limpa a idade
                 document.getElementById('campoIdade').value = '';
             }
+        });
+
+        // ==========================================
+        // 2. SCRIPT DO VIACEP (Busca Automática)
+        // ==========================================
+        document.getElementById('Cep').addEventListener('blur', function() {
+            let cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                document.getElementById('loadingCep').classList.remove('d-none');
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('loadingCep').classList.add('d-none');
+                        if (!data.erro) {
+                            document.getElementById('Logradouro').value = data.logradouro;
+                            document.getElementById('Bairro').value = data.bairro;
+                            document.getElementById('Cidade').value = data.localidade;
+                            document.getElementById('Estado').value = data.uf;
+                            document.getElementById('Numero').focus();
+                        } else {
+                            alert("CEP não encontrado.");
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('loadingCep').classList.add('d-none');
+                        console.error('Erro na busca do CEP', error);
+                    });
+            }
+        });
+
+        document.getElementById('Cep').addEventListener('input', function (e) {
+            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,5})(\d{0,3})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2];
         });
     </script>
 }

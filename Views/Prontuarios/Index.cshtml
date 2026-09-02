@@ -1,0 +1,135 @@
+@model IEnumerable<NeuroSync.Models.Paciente>
+@{
+    ViewData["Title"] = "Prontuários";
+}
+
+<style>
+    /* 1. MÁGICA DO CONTRASTE: Pinta o fundo da tela de "Gelo" para os cartões brancos se destacarem */
+    body, main, .container, .pb-3 {
+        background-color: #f1f5f9 !important; 
+    }
+
+
+    /* 2. CABEÇALHO COMPACTO: Tudo mais próximo e alinhado à esquerda */
+    .header-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04); /* Sombra suave para dar destaque */
+        padding: 24px 32px;
+        margin-bottom: 32px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Mantém tudo do lado esquerdo */
+        gap: 40px; /* Dá um respiro de 40px entre o texto e a barra de busca */
+        flex-wrap: wrap; 
+    }
+    
+    .header-text { display: flex; flex-direction: column; }
+
+    /* 3. BARRA DE BUSCA */
+    .search-input-group {
+        width: 100%;
+        max-width: 320px; /* Deixei a barra um pouco mais delicada */
+    }
+    .search-input-group .input-group-text { background-color: #f8fafc; border-color: #e2e8f0; }
+    .search-input-group .form-control { background-color: #f8fafc; border-color: #e2e8f0; font-weight: 500; }
+    .search-input-group .form-control:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(49, 91, 239, 0.1); }
+
+    /* 4. CARTÕES DOS PACIENTES (Com efeito hover!) */
+    .patient-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    /* Quando passar o mouse, o cartão flutua e a sombra aumenta */
+    .patient-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+</style>
+
+<!-- CABEÇALHO DENTRO DO CARTÃO -->
+<div class="header-card mt-4">
+    <div class="header-text">
+        <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Prontuários Eletrônicos</h3>
+        <p class="text-muted fw-bold mb-0">Selecione um paciente para acessar o histórico.</p>
+    </div>
+    
+    <!-- BARRA DE PESQUISA -->
+    <div class="search-input-group">
+        <div class="input-group">
+            <span class="input-group-text border-end-0 text-muted rounded-start-pill ps-4">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="campoBusca" class="form-control border-start-0 rounded-end-pill py-2 shadow-none" placeholder="Buscar paciente..." autocomplete="off">
+        </div>
+    </div>
+</div>
+
+<!-- LISTA DE CARTÕES DE PACIENTES -->
+<div class="row g-4" id="gradePacientes">
+    @foreach (var paciente in Model)
+    {
+        <div class="col-md-4 col-lg-3 cartao-paciente">
+            <div class="card h-100 patient-card">
+                <div class="card-body text-center p-4">
+                    
+                    <div class="mx-auto mb-3" style="width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center;">
+                        <span style="color: #4f46e5; font-weight: bold; font-size: 1.2rem;">
+                            @paciente.Nome.Substring(0, 1).ToUpper()
+                        </span>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-1 nome-busca" style="color: var(--text-dark);">@paciente.Nome</h5>
+                    <p class="text-muted small mb-3 id-busca">ID: #@paciente.IdPaciente.ToString("D4")</p>
+                    
+                    <a href="/Pacientes/Details/@paciente.IdPaciente" class="btn btn-light text-primary fw-bold w-100 rounded-pill">
+                        Abrir Prontuário
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- MENSAGEM CASO A BUSCA NÃO ENCONTRE NINGUÉM -->
+    <div id="mensagemVazia" class="col-12 text-center py-5" style="display: none;">
+        <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+        <h5 class="fw-bold text-muted">Nenhum paciente encontrado</h5>
+        <p class="text-muted">Tente buscar por outro nome.</p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const campoBusca = document.getElementById("campoBusca");
+            const cartoes = document.querySelectorAll(".cartao-paciente");
+            const mensagemVazia = document.getElementById("mensagemVazia");
+
+            campoBusca.addEventListener("keyup", function () {
+                let termoDigitado = campoBusca.value.toLowerCase();
+                let cartoesVisiveis = 0;
+
+                cartoes.forEach(function (cartao) {
+                    let textoCartao = cartao.innerText.toLowerCase();
+
+                    if (textoCartao.includes(termoDigitado)) {
+                        cartao.style.display = "block";
+                        cartoesVisiveis++;
+                    } else {
+                        cartao.style.display = "none";
+                    }
+                });
+
+                if (cartoesVisiveis === 0) {
+                    mensagemVazia.style.display = "block";
+                } else {
+                    mensagemVazia.style.display = "none";
+                }
+            });
+        });
+    </script>
+}

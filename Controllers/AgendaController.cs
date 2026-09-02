@@ -18,8 +18,7 @@ namespace NeuroSync.Controllers
             _context = context;
         }
 
-        // 1. Ação para uma futura tela de listagem
-// 1. TELA PRINCIPAL (Lista de horários)
+        // 1. TELA PRINCIPAL (Lista de horários)
         public IActionResult Index()
         {
             // Vai no banco, busca a agenda, INCLUI os dados do Paciente e ordena pela data mais próxima
@@ -31,12 +30,51 @@ namespace NeuroSync.Controllers
             return View(agendamentos);
         }
 
-        // 2. GET: Abre a tela de agendamento e envia a lista de pacientes
+        // ==========================================
+        // 2. GET: Abre a tela de Novo Agendamento
+        // ==========================================
+        [HttpGet]
         public IActionResult Create()
         {
             // Pega os pacientes do banco e cria a lista para o Select2 usar
             ViewBag.Pacientes = new SelectList(_context.Pacientes.OrderBy(p => p.Nome), "IdPaciente", "Nome");
             return View();
+        }
+
+        // ==========================================
+        // 3. POST: Salva a sessão (com Repetição!)
+        // ==========================================
+        [HttpPost]
+        public IActionResult Create(Agendamento agendamento, int semanasRepeticao = 1)
+        {
+            if (ModelState.IsValid)
+            {
+                // O laço de repetição: vai rodar 1, 4, 12 ou 24 vezes dependendo da escolha
+                for (int i = 0; i < semanasRepeticao; i++)
+                {
+                    var novaSessao = new Agendamento
+                    {
+                        PacienteId = agendamento.PacienteId,
+                        
+                        // O pulo do gato: Pega a data original e soma 7 dias multiplicados pela semana atual
+                        DataHora = agendamento.DataHora.AddDays(7 * i),
+                        
+                        // Garante que todas nasçam como "Agendadas"
+                        Status = "Agendado" 
+                    };
+                    
+                    _context.Agendamentos.Add(novaSessao);
+                }
+                
+                // Salva todos os clones no banco de dados de uma vez só!
+                _context.SaveChanges();
+                
+                // Redireciona para a tela da Agenda
+                return RedirectToAction("Index"); 
+            }
+            
+            ViewBag.Pacientes = new SelectList(_context.Pacientes.OrderBy(p => p.Nome), "IdPaciente", "Nome", agendamento.PacienteId);
+            return View(agendamento);
         }
 
         // 4. GET: Abre a tela de edição preenchida
@@ -115,24 +153,6 @@ namespace NeuroSync.Controllers
             
             // Volta para a tabela da agenda
             return RedirectToAction("Index");
-        }
-
-        // 3. POST: Salva a sessão no banco de dados
-        [HttpPost]
-        public IActionResult Create(Agendamento agendamento)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Agendamentos.Add(agendamento);
-                _context.SaveChanges();
-                
-                // Redireciona para o painel inicial por enquanto
-                return RedirectToAction("Index", "Home"); 
-            }
-            
-            // Se der erro, recarrega a lista
-            ViewBag.Pacientes = new SelectList(_context.Pacientes.OrderBy(p => p.Nome), "IdPaciente", "Nome", agendamento.PacienteId);
-            return View(agendamento);
         }
     }
 }
