@@ -1,0 +1,12 @@
+# Ignorar pastas pesadas de compilação do C#
+bin/
+obj/
+
+# Ignorar configurações locais do editor
+.vs/
+.vscode/
+*.user
+*.suo
+
+# NOTA: O banco de dados (.db) e a pasta /wwwroot/uploads NÃO estão ignorados aqui.
+# Eles vão subir normalmente para o GitHub!

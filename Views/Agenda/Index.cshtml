@@ -1,0 +1,178 @@
+@model IEnumerable<NeuroSync.Models.Agendamento>
+@{
+    ViewData["Title"] = "Agenda";
+}
+
+<!-- Importando a biblioteca FullCalendar -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<style>
+    /* Cartão Base */
+    .card-calendar { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); padding: 24px; }
+    
+    /* Customização da Barra Superior para ficar igual ao Print */
+    .toolbar-custom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    
+    .btn-toolbar-icon { background: white; border: 1px solid #e2e8f0; border-radius: 8px; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+    .btn-toolbar-icon:hover { background: #f8fafc; color: var(--primary); }
+    
+    .btn-toolbar-text { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 16px; color: var(--text-dark); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+    .btn-toolbar-text:hover { background: #f8fafc; }
+    
+    .toolbar-title { font-weight: 700; color: var(--text-dark); font-size: 1.1rem; }
+    
+    .view-group { display: flex; background: #f8fafc; border-radius: 8px; padding: 4px; gap: 4px; }
+    .btn-view { border: none; background: transparent; padding: 6px 16px; border-radius: 6px; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; transition: 0.3s; }
+    .btn-view.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    /* Customização do FullCalendar */
+    .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; border-width: 1px; }
+    .fc-scrollgrid { border: none !important; }
+    .fc-col-header-cell-cushion { padding: 12px 0 !important; color: var(--text-muted); font-weight: 600; text-transform: capitalize; font-size: 0.95rem; text-decoration: none !important; }
+    .fc-day-today .fc-col-header-cell-cushion { color: var(--primary); font-weight: 700; }
+    .fc-timegrid-now-indicator-line { border-color: var(--primary); }
+    .fc-timegrid-now-indicator-arrow { border-color: var(--primary); background-color: var(--primary); }
+
+    /* Formatação dos Blocos de Consulta */
+    .fc-event { border: none !important; border-radius: 6px !important; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer; transition: 0.2s; }
+    .fc-event:hover { transform: scale(1.02); }
+    .fc-event-time { display: none; } 
+    .fc-event-title { font-weight: 700; font-size: 0.85rem; line-height: 1.2; }
+    .event-subtitle { font-weight: 500; font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0" style="color: var(--text-dark);">Agenda</h3>
+</div>
+
+<div class="card-calendar">
+    <div class="toolbar-custom">
+        <div class="d-flex gap-2">
+            <button class="btn-toolbar-icon" id="btnPrev"><i class="bi bi-chevron-left"></i></button>
+            <button class="btn-toolbar-icon" id="btnNext"><i class="bi bi-chevron-right"></i></button>
+            <button class="btn-toolbar-text" id="btnToday">Hoje</button>
+        </div>
+
+        <div class="toolbar-title" id="calendarTitle">Carregando...</div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="view-group">
+                <button class="btn-view" id="viewDay">Dia</button>
+                <button class="btn-view active" id="viewWeek">Semana</button>
+                <button class="btn-view" id="viewMonth">Mês</button>
+            </div>
+            <!-- Botão aponta para a rota Create que já existe no seu controller -->
+            <a href="/Agenda/Create" class="btn btn-primary fw-bold rounded-pill px-4 text-decoration-none" style="background: var(--primary);">
+                <i class="bi bi-plus-lg me-1"></i> Novo atendimento
+            </a>
+        </div>
+    </div>
+
+    <div id="calendar"></div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            // 1. MÁGICA DE INTEGRAÇÃO: O C# gerando o Javascript!
+            var eventosDoBanco = [
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var agendamento in Model)
+                    {
+                        var nomePaciente = agendamento.Paciente != null ? agendamento.Paciente.Nome : "Paciente não encontrado";
+                        
+                        // Formata a data para o Javascript entender
+                        var dataInicio = agendamento.DataHora.ToString("yyyy-MM-ddTHH:mm:ss");
+                        var dataFim = agendamento.DataHora.AddHours(1).ToString("yyyy-MM-ddTHH:mm:ss");
+
+                        // LÓGICA DE CORES E STATUS
+                        var statusAtual = string.IsNullOrEmpty(agendamento.Status) ? "Agendado" : agendamento.Status;
+                        
+                        string bgColor = "#e0e7ff"; // Azul pastel (Padrão/Agendado)
+                        string txtColor = "#3730a3"; 
+
+                        if (statusAtual.Contains("Cancelado"))
+                        {
+                            bgColor = "#fee2e2"; // Vermelho pastel
+                            txtColor = "#991b1b";
+                        }
+                        else if (statusAtual.Contains("Realizado"))
+                        {
+                            bgColor = "#dcfce3"; // Verde pastel
+                            txtColor = "#166534";
+                        }
+                        else if (statusAtual.Contains("Falta"))
+                        {
+                            bgColor = "#ffedd5"; // Laranja pastel
+                            txtColor = "#9a3412";
+                        }
+
+                        <text>
+                        {
+                            id: '@agendamento.IdAgendamento',
+                            title: '@Html.Raw(nomePaciente)',
+                            start: '@dataInicio',
+                            end: '@dataFim',
+                            backgroundColor: '@bgColor',
+                            textColor: '@txtColor',
+                            extendedProps: {
+                                // Mostra o status real que vem do banco de dados
+                                terapia: '@Html.Raw(statusAtual)' 
+                            }
+                        },
+                        </text>
+                    }
+                }
+            ];
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek', 
+                locale: 'pt-br',             
+                headerToolbar: false,        
+                allDaySlot: false,           
+                slotMinTime: '08:00:00',     
+                slotMaxTime: '19:00:00',     
+                slotDuration: '01:00:00',    
+                expandRows: true,
+                height: 700,
+                
+                datesSet: function(info) {
+                    document.getElementById('calendarTitle').innerText = info.view.title;
+                },
+
+                eventContent: function(arg) {
+                    let titleHtml = `<div class="fc-event-title">${arg.event.title}</div>`;
+                    let subHtml = arg.event.extendedProps.terapia ? `<div class="event-subtitle">${arg.event.extendedProps.terapia}</div>` : '';
+                    return { html: titleHtml + subHtml };
+                },
+
+                // INJETA OS EVENTOS DO C# AQUI
+                events: eventosDoBanco,
+
+                // 2. NAVEGAÇÃO: Clicar no agendamento leva para a tela de edição
+                eventClick: function(info) {
+                    window.location.href = '/Agenda/Edit/' + info.event.id;
+                }
+            });
+
+            calendar.render();
+
+            // Lógica dos nossos botões superiores
+            document.getElementById('btnPrev').addEventListener('click', function() { calendar.prev(); });
+            document.getElementById('btnNext').addEventListener('click', function() { calendar.next(); });
+            document.getElementById('btnToday').addEventListener('click', function() { calendar.today(); });
+            
+            let views = { 'viewDay': 'timeGridDay', 'viewWeek': 'timeGridWeek', 'viewMonth': 'dayGridMonth' };
+            for (let id in views) {
+                document.getElementById(id).addEventListener('click', function() {
+                    calendar.changeView(views[id]);
+                    document.querySelectorAll('.btn-view').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            }
+        });
+    </script>
+}

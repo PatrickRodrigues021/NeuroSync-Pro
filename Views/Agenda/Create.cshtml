@@ -1,0 +1,94 @@
+@model NeuroSync.Models.Agendamento
+
+@{
+    ViewData["Title"] = "Novo Atendimento";
+}
+
+<style>
+    .card-form { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; }
+    .form-label { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #e2e8f0; padding: 12px 16px; background-color: #f8fafc; transition: 0.3s; font-weight: 500; }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); background-color: white; box-shadow: 0 0 0 4px rgba(49, 91, 239, 0.1); }
+</style>
+
+<div class="row">
+    <div class="col-md-8 col-lg-6 mx-auto mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Agendar Atendimento</h3>
+                <p class="text-muted fw-bold">Reserve um horário na agenda.</p>
+            </div>
+            <a href="/Agenda" class="btn btn-light fw-bold text-muted rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i> Voltar</a>
+        </div>
+
+        <div class="card-form p-4 p-md-5">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="alert alert-danger fw-bold rounded-3 validation-summary-valid"></div>
+                
+                <div class="mb-4">
+                    <label asp-for="PacienteId" class="form-label">Paciente *</label>
+                    <select asp-for="PacienteId" class="form-select" asp-items="ViewBag.Pacientes" required>
+                        <option value="">-- Selecione o Paciente --</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="DataHora" class="form-label">Data e Horário *</label>
+                    <input asp-for="DataHora" type="datetime-local" class="form-control" required />
+                </div>
+
+                <!-- TIPO DE SESSÃO (NOVO) -->
+                <div class="mb-4">
+                    <label asp-for="TipoSessao" class="form-label">Tipo de Sessão</label>
+                    <select asp-for="TipoSessao" class="form-select">
+                        <option value="Intervenção">Intervenção (Rotina)</option>
+                        <option value="Avaliação">Avaliação</option>
+                        <option value="Devolutiva">Devolutiva com os Pais</option>
+                    </select>
+                </div>
+
+                <!-- CAMPO DE REPETIÇÃO SEMANAL (NOVO) -->
+                <div class="mb-4">
+                    <label class="form-label text-primary"><i class="bi bi-arrow-repeat"></i> Repetição Semanal</label>
+                    <!-- O atributo name="semanasRepeticao" conecta com o C# do Controller -->
+                    <select name="semanasRepeticao" class="form-select border-primary bg-light">
+                        <option value="1">Não se repete (Sessão Única)</option>
+                        <option value="4">Repetir toda semana (1 Mês - 4 sessões)</option>
+                        <option value="12">Repetir toda semana (3 Meses - 12 sessões)</option>
+                        <option value="24">Repetir toda semana (6 Meses - 24 sessões)</option>
+                    </select>
+                    <div class="form-text text-muted small mt-2">
+                        <i class="bi bi-info-circle"></i> O sistema criará as sessões de forma independente. Você poderá alterar o horário ou cancelar uma semana específica sem afetar as outras.
+                    </div>
+                </div>
+
+                <!-- VALOR DA SESSÃO / GERAÇÃO AUTOMÁTICA DE COBRANÇA (NOVO) -->
+                <div class="mb-4">
+                    <label class="form-label text-success"><i class="bi bi-cash-coin"></i> Valor da Sessão (R$)</label>
+                    <!-- name="valorSessao" conecta com o parâmetro do Controller -->
+                    <input type="number" step="0.01" min="0" name="valorSessao" class="form-control border-success bg-light" placeholder="Ex: 150,00" />
+                    <div class="form-text text-muted small mt-2">
+                        <i class="bi bi-info-circle"></i> Se preenchido, o sistema gera automaticamente uma cobrança pendente para <strong>cada sessão criada</strong> (o mesmo valor se repete em todas). O fechamento do pagamento de cada cobrança só fica liberado depois que a respectiva sessão for marcada como <strong>Realizado</strong> na Agenda.
+                    </div>
+                </div>
+
+                <!-- Se você tiver outros campos no model Agendamento (como Observação, Status), 
+                     você pode adicioná-los aqui embaixo -->
+
+                <div class="d-flex justify-content-end gap-3 pt-4 border-top mt-5">
+                    <a href="/Agenda" class="btn btn-light fw-bold px-4 rounded-pill text-muted">Cancelar</a>
+                    <button type="submit" class="btn btn-primary fw-bold px-5 rounded-pill shadow-sm">
+                        <i class="bi bi-check-lg me-2"></i> Confirmar Agendamento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .validation-summary-valid { display: none; }
+    </style>
+}

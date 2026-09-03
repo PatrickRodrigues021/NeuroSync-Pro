@@ -1,0 +1,73 @@
+@model NeuroSync.Models.Agendamento
+
+@{
+    ViewData["Title"] = "Editar Sessão";
+}
+
+<div class="container mt-4 mb-5">
+    <h2 class="text-primary"><i class="bi bi-pencil-square"></i> Editar Sessão</h2>
+    <p class="text-muted">Altere o status, a data ou as observações do atendimento.</p>
+    <hr />
+
+    <div class="card shadow-sm border-0 mt-4" style="max-width: 600px;">
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                <!-- O ID ESCONDIDO PARA O BANCO SABER QUAL ATUALIZAR -->
+                <input type="hidden" asp-for="IdAgendamento" />
+
+                <!-- Paciente (com Select2) -->
+                <div class="mb-4">
+                    <label asp-for="PacienteId" class="control-label fw-bold">Paciente *</label>
+                    <select asp-for="PacienteId" id="buscaPaciente" class="form-select" asp-items="ViewBag.Pacientes" required></select>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="DataHora" class="control-label fw-bold">Data e Horário *</label>
+                        <input asp-for="DataHora" type="datetime-local" class="form-control" required />
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="TipoSessao" class="control-label fw-bold">Tipo de Sessão</label>
+                        <select asp-for="TipoSessao" class="form-select">
+                            <option value="Intervenção">Intervenção (Rotina)</option>
+                            <option value="Avaliação">Avaliação</option>
+                            <option value="Devolutiva">Devolutiva com os Pais</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- A GRANDE NOVIDADE: CAMPO DE STATUS -->
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <label asp-for="Status" class="control-label fw-bold text-primary">Status do Atendimento</label>
+                    <select asp-for="Status" class="form-select border-primary shadow-sm mt-1">
+                        <option value="Agendado">Agendado (Aguardando)</option>
+                        <option value="Realizado">Realizado (Paciente compareceu)</option>
+                        <option value="Falta">Falta (Não compareceu)</option>
+                        <option value="Cancelado">Cancelado (Avisou antes)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Observacoes" class="control-label fw-bold">Observações</label>
+                    <textarea asp-for="Observacoes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="text-end mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-warning fw-bold text-dark"><i class="bi bi-save"></i> Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#buscaPaciente').select2({ width: '100%' });
+        });
+    </script>
+}

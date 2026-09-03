@@ -1,0 +1,262 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    /* Estilos dos cartões inspirados na imagem */
+    .card-dash { 
+        border: none; 
+        border-radius: 16px; 
+        background-color: white; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+        transition: 0.2s; 
+    }
+    .card-dash:hover { box-shadow: 0 6px 25px rgba(0,0,0,0.06); transform: translateY(-2px); }
+    
+    .icon-box { 
+        width: 55px; 
+        height: 55px; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 1.6rem; 
+    }
+</style>
+
+<!-- SAUDAÇÃO -->
+<div class="mb-5">
+    <h3 class="fw-bold mb-2" style="color: var(--text-dark);">Bom dia, Dr. Patrick! 👋</h3>
+    <p class="text-muted" style="font-weight: 500;">Aqui está o resumo da sua clínica hoje.</p>
+</div>
+
+<!-- LINHA 1: CARTÕES DE RESUMO -->
+<div class="row g-4 mb-5">
+    
+    <!-- Card 1: Pacientes Ativos (Fundo Azul Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f8fbff; border: 1px solid #eef4fc;">
+            <div class="icon-box bg-primary-subtle text-primary me-3">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">128</h2>
+                <span class="text-muted small fw-bold">Pacientes ativos</span>
+                <div class="small fw-bold mt-1" style="color: #10B981;"><i class="bi bi-arrow-up-short"></i>+12 este mês</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Sessões Hoje (Fundo Ciano Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f2fcfc; border: 1px solid #e6f7f7;">
+            <div class="icon-box me-3" style="color: #16C4C8; background-color: #e0f8f8;">
+                <i class="bi bi-clipboard2-pulse"></i>
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">24</h2>
+                <span class="text-muted small fw-bold">Sessões hoje</span>
+                <div class="small text-muted mt-1 fw-bold">8 concluídas</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Pendências (Fundo Amarelo Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #fffaf0; border: 1px solid #fdf0d5;">
+            <div class="icon-box bg-warning-subtle text-warning me-3">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark);">12</h2>
+                <span class="text-muted small fw-bold">Pendências</span>
+                <div class="small text-muted mt-1 fw-bold">prontuários</div>
+            </div>
+        </div>
+    </div>
+    
+<!-- Card 4: Financeiro (Fundo Verde Claro) -->
+    <div class="col-md-3">
+        <div class="card-dash p-4 h-100 d-flex align-items-center" style="background-color: #f0fdf4; border: 1px solid #e1f7e8;">
+            <div class="icon-box bg-success-subtle text-success me-3">
+                <i class="bi bi-cash-coin"></i> <!-- Ícone corrigido aqui! -->
+            </div>
+            <div>
+                <h2 class="fw-bolder mb-0" style="color: var(--text-dark); font-size: 1.8rem;">R$ 15,4k</h2>
+                <span class="text-muted small fw-bold">Receita do mês</span>
+                <div class="small text-success mt-1 fw-bold"><i class="bi bi-arrow-up-short"></i>+8.5% vs. anterior</div>
+            </div>
+        </div>
+    </div>
+
+<<!-- LINHA 2: LISTAS E GRÁFICOS -->
+<div class="row g-4">
+    
+    <!-- LADO ESQUERDO: Próximos Atendimentos -->
+    <div class="col-lg-6">
+        <div class="card-dash p-0 h-100 d-flex flex-column">
+            <!-- Cabeçalho mais elegante -->
+            <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: var(--text-dark);">
+                    <i class="bi bi-calendar-check text-primary me-2"></i> Próximos atendimentos
+                </h5>
+                <a href="/Agenda" class="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3">Ver agenda completa</a>
+            </div>
+            
+            <div class="d-flex flex-column p-4 gap-4 flex-grow-1">
+                
+                <!-- Paciente 1 -->
+                <div class="d-flex align-items-center border-bottom pb-3">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block" style="color: var(--text-dark);">09:00</span>
+                        <span style="font-size: 0.75rem;">10:00</span>
+                    </div>
+                    <div class="icon-box bg-primary-subtle text-primary me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold;">
+                        J
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">João Silva</h6>
+                        <span class="text-muted small fw-bold">Fonoaudiologia</span>
+                    </div>
+                    <!-- Badge preenchendo o vazio -->
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 border border-success-subtle">
+                            <i class="bi bi-check2-circle me-1"></i> Confirmado
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Paciente 2 -->
+                <div class="d-flex align-items-center border-bottom pb-3">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block text-primary">10:00</span>
+                        <span style="font-size: 0.75rem;">10:45</span>
+                    </div>
+                    <div class="icon-box me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold; color: #16C4C8; background-color: #e0f8f8;">
+                        M
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">Maria Oliveira</h6>
+                        <span class="text-muted small fw-bold">Psicologia</span>
+                    </div>
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-primary text-white rounded-pill px-3 py-2 shadow-sm">
+                            <i class="bi bi-play-circle me-1"></i> Em andamento
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Paciente 3 (Sem borda no último) -->
+                <div class="d-flex align-items-center">
+                    <div class="text-muted small me-4 text-end" style="width: 45px; line-height: 1.2;">
+                        <span class="fw-bold d-block" style="color: var(--text-dark);">11:00</span>
+                        <span style="font-size: 0.75rem;">11:30</span>
+                    </div>
+                    <div class="icon-box bg-warning-subtle text-warning me-3" style="width: 45px; height: 45px; font-size: 1.1rem; font-weight: bold;">
+                        P
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold" style="color: var(--text-dark);">Pedro Santos</h6>
+                        <span class="text-muted small fw-bold">Terapia Ocupacional</span>
+                    </div>
+                    <div class="ms-auto d-none d-sm-block">
+                        <span class="badge bg-light text-secondary rounded-pill px-3 py-2 border">
+                            <i class="bi bi-clock me-1"></i> Aguardando
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- LADO DIREITO: Gráfico de Status das Sessões -->
+    <div class="col-lg-6">
+        <div class="card-dash p-0 h-100 d-flex flex-column">
+            <!-- Cabeçalho -->
+            <div class="p-4 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: var(--text-dark);">
+                    <i class="bi bi-pie-chart text-primary me-2"></i> Status das Sessões <span class="text-muted fs-6 fw-normal ms-1">(Setembro)</span>
+                </h5>
+            </div>
+            
+            <!-- Palco do Gráfico -->
+            <div class="flex-grow-1 position-relative d-flex justify-content-center align-items-center p-4" style="min-height: 260px;">
+                
+                <!-- Container limitador para o gráfico não se espalhar muito -->
+                <div style="position: relative; height: 220px; width: 100%; max-width: 400px; display: flex; justify-content: center;">
+                    <canvas id="statusChart"></canvas>
+                    
+                    <!-- O TRUQUE: O Número no meio da rosca -->
+                    <div class="position-absolute top-50 start-50 translate-middle text-center" style="pointer-events: none; margin-left: -55px;"> <!-- Margin puxa um pouco pra esquerda pra compensar a legenda -->
+                        <h2 class="fw-bolder mb-0" style="color: var(--text-dark); line-height: 1;">77</h2>
+                        <span class="text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Total</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        const ctx = document.getElementById('statusChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Realizadas', 'Agendadas', 'Canceladas', 'Faltas'],
+                datasets: [{
+                    data: [42, 28, 5, 2],
+                    backgroundColor: [
+                        '#10B981', 
+                        '#315BEF', 
+                        '#F59E0B', 
+                        '#EF4444'  
+                    ],
+                    borderWidth: 0, 
+                    cutout: '82%', // Aumentei o buraco para o número respirar!
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right', 
+                        labels: {
+                            usePointStyle: true, 
+                            padding: 25,
+                            boxWidth: 8,
+                            font: { 
+                                family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", 
+                                size: 12,
+                                weight: '600'
+                            },
+                            color: '#64748B' 
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#071A3A',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                layout: {
+                    padding: 0
+                }
+            }
+        });
+    </script>
+}

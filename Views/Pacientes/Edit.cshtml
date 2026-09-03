@@ -1,0 +1,124 @@
+@model NeuroSync.Models.Paciente
+
+@{
+    ViewData["Title"] = "Editar Ficha Clínica";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-secondary"><i class="bi bi-pencil-square text-warning me-2"></i> Atualizar Prontuário</h2>
+        <a asp-action="Details" asp-route-id="@Model.IdPaciente" class="btn btn-outline-secondary fw-bold">
+            <i class="bi bi-arrow-left"></i> Voltar ao Perfil
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                <!-- O ID oculto é fundamental para o C# saber qual paciente atualizar -->
+                <input type="hidden" asp-for="IdPaciente" />
+                <input type="hidden" asp-for="CriadoEm" />
+
+                <div class="row">
+                    <!-- COLUNA ESQUERDA: Dados Pessoais -->
+                    <div class="col-md-6 border-end pe-md-4">
+                        <h5 class="text-primary mb-4 border-bottom pb-2">Dados Pessoais e Contato</h5>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Nome" class="form-label fw-bold">Nome do Paciente *</label>
+                            <input asp-for="Nome" class="form-control" required />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Idade" class="form-label fw-bold">Idade *</label>
+                            <input asp-for="Idade" type="number" class="form-control" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NomeMae" class="form-label fw-bold">Nome da Mãe</label>
+                                <input asp-for="NomeMae" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NomePai" class="form-label fw-bold">Nome do Pai</label>
+                                <input asp-for="NomePai" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Telefone" class="form-label fw-bold">Telefone *</label>
+                            <input asp-for="Telefone" class="form-control" required />
+                        </div>
+
+                        <!-- DADOS DE ENDEREÇO ATUALIZADOS -->
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Cep" class="control-label">CEP</label>
+                                <input asp-for="Cep" class="form-control" />
+                            </div>
+                            <div class="col-md-7 mb-3">
+                                <label asp-for="Logradouro" class="control-label">Logradouro (Rua, Av.)</label>
+                                <input asp-for="Logradouro" class="form-control" />
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label asp-for="Numero" class="control-label">Número</label>
+                                <input asp-for="Numero" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Complemento" class="control-label">Complemento</label>
+                                <input asp-for="Complemento" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Bairro" class="control-label">Bairro</label>
+                                <input asp-for="Bairro" class="form-control" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="Cidade" class="control-label">Cidade</label>
+                                <input asp-for="Cidade" class="form-control" />
+                            </div>
+                            <div class="col-md-1 mb-3">
+                                <label asp-for="Estado" class="control-label">UF</label>
+                                <input asp-for="Estado" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA DIREITA: Dados Clínicos (Anamnese) -->
+                    <div class="col-md-6 ps-md-4">
+                        <h5 class="text-primary mb-4 border-bottom pb-2">Quadro Clínico (Anamnese)</h5>
+
+                        <div class="mb-3">
+                            <label asp-for="DiagnosticoPrincipal" class="form-label fw-bold text-danger">Diagnóstico Principal (CID)</label>
+                            <input asp-for="DiagnosticoPrincipal" class="form-control" placeholder="Ex: F84.0 - Autismo Infantil" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MedicamentosContinuos" class="form-label fw-bold">Medicamentos de Uso Contínuo</label>
+                            <input asp-for="MedicamentosContinuos" class="form-control" placeholder="Ex: Ritalina 10mg, Risperidona 1mg" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MetasCurtoPrazo" class="form-label fw-bold text-success">Metas Terapêuticas (Curto Prazo)</label>
+                            <textarea asp-for="MetasCurtoPrazo" class="form-control" rows="3" placeholder="O que esperamos alcançar nas próximas semanas?"></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="MetasLongoPrazo" class="form-label fw-bold text-primary">Metas Terapêuticas (Longo Prazo)</label>
+                            <textarea asp-for="MetasLongoPrazo" class="form-control" rows="3" placeholder="Objetivos finais da intervenção..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm px-5">
+                        <i class="bi bi-check-circle"></i> Salvar Prontuário
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

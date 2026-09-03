@@ -1,0 +1,117 @@
+@model IEnumerable<NeuroSync.Models.Cobranca>
+
+@{
+    ViewData["Title"] = "Gestão Financeira";
+}
+
+<div class="container mt-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="text-warning text-darken-2 mb-0"><i class="bi bi-wallet2"></i> Controle Financeiro</h2>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-action="ExportarExcel" asp-route-pacienteId="@ViewBag.PacienteSelecionado" asp-route-status="@ViewBag.StatusSelecionado" asp-route-competencia="@ViewBag.CompetenciaSelecionada" class="btn btn-outline-success fw-bold shadow-sm">
+                <i class="bi bi-file-earmark-excel"></i> Excel
+            </a>
+            <a asp-action="ExportarPdf" asp-route-pacienteId="@ViewBag.PacienteSelecionado" asp-route-status="@ViewBag.StatusSelecionado" asp-route-competencia="@ViewBag.CompetenciaSelecionada" class="btn btn-outline-danger fw-bold shadow-sm">
+                <i class="bi bi-file-earmark-pdf"></i> PDF
+            </a>
+            <a asp-action="Create" class="btn btn-warning fw-bold text-dark shadow-sm">
+                <i class="bi bi-plus-lg"></i> Nova Cobrança
+            </a>
+        </div>
+    </div>
+
+    <!-- Barra de filtros -->
+    <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Paciente</label>
+                    <select name="pacienteId" asp-items="ViewBag.Pacientes" class="form-select">
+                        <option value="">Todos os pacientes</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Todos" selected="@(ViewBag.StatusSelecionado == "Todos")">Todos</option>
+                        <option value="Pendente" selected="@(ViewBag.StatusSelecionado == "Pendente")">Pendentes</option>
+                        <option value="Pago" selected="@(ViewBag.StatusSelecionado == "Pago")">Pagos</option>
+                        <option value="Atrasado" selected="@(ViewBag.StatusSelecionado == "Atrasado")">Atrasados</option>
+                        <option value="Cancelado" selected="@(ViewBag.StatusSelecionado == "Cancelado")">Cancelados</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Competência</label>
+                    <input type="month" name="competencia" value="@ViewBag.CompetenciaSelecionada" class="form-control" />
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary" title="Limpar filtros"><i class="bi bi-x-lg"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Vencimento</th>
+                            <th>Paciente</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold">@item.DataVencimento.ToString("dd/MM/yyyy")</td>
+                                    <td>@(item.Paciente != null ? item.Paciente.Nome : "Excluído")</td>
+                                    <td>@item.Descricao</td>
+                                    <td class="text-success fw-bold">@item.Valor.ToString("C")</td>
+                                    <td>
+                                        @if(item.Status == "Pendente") {
+                                            <span class="badge bg-warning text-dark rounded-pill px-3">@item.Status</span>
+                                        } else if (item.Status == "Pago") {
+                                            <span class="badge bg-success rounded-pill px-3">@item.Status</span>
+                                        } else {
+                                            <span class="badge bg-danger rounded-pill px-3">@item.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <!-- Botões preparados para a próxima etapa (Dar Baixa / Excluir) -->
+                                        <a asp-action="Baixa" asp-route-id="@item.IdCobranca" class="btn btn-sm btn-outline-success" title="Registrar Pagamento">
+                                            <i class="bi bi-check2-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.IdCobranca" class="btn btn-sm btn-outline-danger" title="Apagar Cobrança">
+                                            <i class="bi bi-x-circle"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-cash-coin fs-1 d-block mb-2"></i>
+                                    Nenhuma cobrança liberada para o financeiro com os filtros selecionados.
+                                    <br />
+                                    <small>Cobranças de sessões só aparecem aqui depois que a sessão é marcada como "Realizado" na Agenda.</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,181 @@
+@model NeuroSync.Models.Paciente
+
+@{
+    ViewData["Title"] = "Prontuário do Paciente";
+}
+
+<style>
+    /* Estilos Premium para o Prontuário */
+    .prontuario-container { background-color: #f8fafc; padding-bottom: 2rem; }
+    
+    /* Header do Paciente */
+    .patient-header-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); padding: 24px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+    .avatar-wrapper { width: 80px; height: 80px; border-radius: 50%; background: #e0e7ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .patient-name { font-weight: 700; color: var(--text-dark); font-size: 1.25rem; margin-bottom: 4px; }
+    .patient-meta { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+    
+    .info-group { display: flex; flex-direction: column; }
+    .info-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+    .info-value { font-weight: 600; color: var(--text-dark); font-size: 0.95rem; }
+
+    /* Customização das Abas (Tabs) */
+    .nav-tabs-custom { border-bottom: 2px solid #e2e8f0; gap: 1rem; margin-bottom: 24px; }
+    .nav-tabs-custom .nav-link { border: none; color: var(--text-muted); font-weight: 600; padding: 12px 4px; background: transparent; position: relative; margin-bottom: -2px; }
+    .nav-tabs-custom .nav-link:hover { color: var(--primary); }
+    .nav-tabs-custom .nav-link.active { color: var(--primary); background: transparent; }
+    .nav-tabs-custom .nav-link.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background-color: var(--primary); border-radius: 2px 2px 0 0; }
+
+    /* Cards Internos (Resumo) */
+    .dashboard-card { background: white; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px rgba(0,0,0,0.02); padding: 24px; height: 100%; }
+    .card-title-custom { font-weight: 700; color: var(--text-dark); font-size: 1rem; margin-bottom: 20px; }
+    
+    /* Linha do Tempo (Evoluções mockadas para o design) */
+    .timeline-item { position: relative; padding-left: 20px; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 50%; background-color: #93c5fd; }
+    .timeline-date { font-size: 0.8rem; color: #64748b; font-weight: 600; margin-bottom: 4px; }
+    .timeline-text { font-size: 0.9rem; color: #334155; line-height: 1.5; }
+
+    /* Próximos Atendimentos */
+    .appointment-item { margin-bottom: 16px; }
+    .appointment-datetime { font-size: 0.85rem; color: #64748b; font-weight: 600; }
+    .appointment-type { font-size: 0.95rem; color: var(--text-dark); font-weight: 600; }
+</style>
+
+<div class="prontuario-container">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0" style="color: var(--text-dark);">Prontuário do Paciente</h3>
+        <a href="/Pacientes" class="btn btn-light fw-bold text-muted rounded-pill px-4"><i class="bi bi-arrow-left me-2"></i> Voltar</a>
+    </div>
+
+    <!-- CABEÇALHO DO PACIENTE (Baseado no Print) -->
+    <div class="patient-header-card">
+        <!-- Avatar SVG Genérico -->
+        <div class="avatar-wrapper">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        
+        <div class="flex-grow-1">
+            <h2 class="patient-name">@Model.Nome</h2>
+            <div class="patient-meta">
+                @Model.Idade anos • @Model.DataNascimento.ToString("dd/MM/yyyy") 
+                <br />
+                Responsável: @(string.IsNullOrEmpty(Model.NomeMae) ? (string.IsNullOrEmpty(Model.NomePai) ? "Não informado" : Model.NomePai) : Model.NomeMae)
+            </div>
+        </div>
+
+        <div class="d-flex gap-5 ms-auto pe-3 border-start ps-5">
+            <div class="info-group">
+                <span class="info-label">Criado em</span>
+                <span class="info-value">@Model.CriadoEm.ToString("dd/MM/yyyy")</span>
+            </div>
+            <div class="info-group">
+                <span class="info-label">Status</span>
+                <span class="info-value text-success"><i class="bi bi-circle-fill small me-1"></i> Ativo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGAÇÃO POR ABAS -->
+    <ul class="nav nav-tabs nav-tabs-custom" id="prontuarioTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="resumo-tab" data-bs-toggle="tab" data-bs-target="#resumo" type="button" role="tab">Resumo</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="anamnese-tab" data-bs-toggle="tab" data-bs-target="#anamnese" type="button" role="tab">Anamnese</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="evolucao-tab" data-bs-toggle="tab" data-bs-target="#evolucao" type="button" role="tab">Evolução</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="atendimentos-tab" data-bs-toggle="tab" data-bs-target="#atendimentos" type="button" role="tab">Atendimentos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="documentos-tab" data-bs-toggle="tab" data-bs-target="#documentos" type="button" role="tab">Documentos</button>
+        </li>
+    </ul>
+
+    <!-- CONTEÚDO DAS ABAS -->
+    <div class="tab-content" id="prontuarioTabsContent">
+        
+        <!-- ABA 1: RESUMO (Ativa) -->
+        <div class="tab-pane fade show active" id="resumo" role="tabpanel">
+            <div class="row g-4">
+                
+                <!-- Coluna 1: Resumo Clínico (Vem do seu Banco de Dados!) -->
+                <div class="col-md-4">
+                    <div class="dashboard-card">
+                        <h5 class="card-title-custom">Resumo clínico</h5>
+                        
+                        <div class="mb-4">
+                            <span class="info-label text-primary">Diagnóstico</span>
+                            <p class="mt-1 mb-0" style="font-size: 0.95rem; color: #334155;">
+                                @(string.IsNullOrEmpty(Model.DiagnosticoPrincipal) ? "Nenhum diagnóstico registrado." : Model.DiagnosticoPrincipal)
+                            </p>
+                        </div>
+
+                        <div>
+                            <span class="info-label text-primary">Objetivos principais (Curto Prazo)</span>
+                            <p class="mt-1 mb-0" style="font-size: 0.95rem; color: #334155;">
+                                @(string.IsNullOrEmpty(Model.MetasCurtoPrazo) ? "Nenhuma meta definida." : Model.MetasCurtoPrazo)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Últimas evoluções (Visual Mockado para o Design) -->
+                <div class="col-md-5">
+                    <div class="dashboard-card">
+                        <h5 class="card-title-custom">Últimas evoluções</h5>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-date">24/05/2026</div>
+                            <div class="timeline-text">Evolução positiva na articulação em posição inicial. Participação ativa nas atividades lúdicas.</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">16/05/2026</div>
+                            <div class="timeline-text">Ampliação de vocabulário. Iniciada atividade de consciência fonológica com blocos.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Próximos Atendimentos (Visual Mockado para o Design) -->
+                <div class="col-md-3">
+                    <div class="dashboard-card d-flex flex-column">
+                        <h5 class="card-title-custom">Próximos atendimentos</h5>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-datetime">26/05/2026 - 09:00</div>
+                            <div class="appointment-type">Sessão de Rotina</div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-datetime">30/05/2026 - 10:00</div>
+                            <div class="appointment-type">Sessão de Rotina</div>
+                        </div>
+
+                        <div class="mt-auto pt-3">
+                            <a href="/Agenda" class="btn btn-primary w-100 fw-bold rounded-pill" style="background: var(--primary);">Ver agenda completa</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ABA 2: ANAMNESE (Vazia por enquanto) -->
+        <div class="tab-pane fade" id="anamnese" role="tabpanel">
+            <div class="dashboard-card text-center py-5">
+                <i class="bi bi-file-earmark-medical text-muted" style="font-size: 3rem;"></i>
+                <h5 class="mt-3 fw-bold text-muted">Anamnese</h5>
+                <p class="text-muted">As informações da anamnese detalhada aparecerão aqui.</p>
+                <a href="/Pacientes/Edit/@Model.IdPaciente" class="btn btn-outline-primary fw-bold rounded-pill mt-2">Editar Dados Clínicos</a>
+            </div>
+        </div>
+
+        <!-- As outras abas seguem a mesma lógica (Evolução, Documentos, etc) -->
+        <div class="tab-pane fade" id="evolucao" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
+        <div class="tab-pane fade" id="atendimentos" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
+        <div class="tab-pane fade" id="documentos" role="tabpanel"><div class="dashboard-card p-4">Em construção...</div></div>
+
+    </div>
+</div>

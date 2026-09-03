@@ -1,0 +1,49 @@
+@model NeuroSync.Models.Cobranca
+
+@{
+    ViewData["Title"] = "Registrar Pagamento";
+}
+
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+    <div class="card shadow border-success" style="max-width: 500px; width: 100%;">
+        <div class="card-header bg-success text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i> Registrar Pagamento</h4>
+        </div>
+        <div class="card-body p-4">
+            <h5 class="text-center mb-4">Confirmar o recebimento deste valor?</h5>
+
+            <div asp-validation-summary="All" class="alert alert-danger fw-bold rounded-3"></div>
+
+            @if (ViewBag.SessaoPendente == true)
+            {
+                <div class="alert alert-warning fw-bold">
+                    <i class="bi bi-exclamation-triangle"></i> Esta cobrança está vinculada a uma sessão que ainda não foi marcada como <strong>"Realizado"</strong> na Agenda. Atualize o status da sessão antes de confirmar o pagamento.
+                </div>
+            }
+            
+            <!-- Resumo do Boleto -->
+            <div class="bg-light p-3 rounded mb-4 border">
+                <p class="mb-1"><strong>Paciente:</strong> @(Model.Paciente != null ? Model.Paciente.Nome : "Excluído")</p>
+                <p class="mb-1"><strong>Descrição:</strong> @Model.Descricao</p>
+                <p class="mb-1"><strong>Vencimento:</strong> @Model.DataVencimento.ToString("dd/MM/yyyy")</p>
+                <p class="mb-0 fs-5 text-success fw-bold"><strong>Valor:</strong> @Model.Valor.ToString("C")</p>
+            </div>
+
+            <form asp-action="Baixa" method="post">
+                <!-- O ID da cobrança escondido -->
+                <input type="hidden" asp-for="IdCobranca" />
+                
+                <!-- Campo para confirmar o dia que o dinheiro entrou -->
+                <div class="mb-4">
+                    <label asp-for="DataPagamento" class="control-label fw-bold">Data do Pagamento *</label>
+                    <input asp-for="DataPagamento" type="date" class="form-control" required />
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold">Cancelar</a>
+                    <button type="submit" class="btn btn-success px-4 fw-bold" @(ViewBag.SessaoPendente == true ? "disabled" : "")><i class="bi bi-cash"></i> Confirmar Pagamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

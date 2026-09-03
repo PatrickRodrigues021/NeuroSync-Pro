@@ -1,0 +1,36 @@
+@model NeuroSync.Models.Agendamento
+
+@{
+    ViewData["Title"] = "Cancelar Sessão";
+}
+
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+    <div class="card shadow border-danger" style="max-width: 500px; width: 100%;">
+        <div class="card-header bg-danger text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-calendar-x-fill me-2"></i> Confirmar Exclusão</h4>
+        </div>
+        <div class="card-body p-4">
+            <h5 class="text-center mb-4">Tem certeza de que deseja apagar este agendamento?</h5>
+            
+            <!-- Resumo da Sessão -->
+            <div class="bg-light p-3 rounded mb-4">
+                <p class="mb-1"><strong>Paciente:</strong> @(Model.Paciente != null ? Model.Paciente.Nome : "Paciente Excluído")</p>
+                <p class="mb-1"><strong>Data:</strong> @Model.DataHora.ToString("dd/MM/yyyy")</p>
+                <p class="mb-1"><strong>Horário:</strong> @Model.DataHora.ToString("HH:mm")</p>
+                <p class="mb-0"><strong>Tipo:</strong> @Model.TipoSessao</p>
+            </div>
+            
+            <p class="text-danger small text-center mb-4">
+                <strong>Atenção:</strong> Isso removerá a consulta do sistema. Se o paciente apenas desmarcou, recomendamos usar a opção "Editar" e mudar o status para "Cancelado".
+            </p>
+
+            <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+                <!-- O ID da sessão escondido -->
+                <input type="hidden" asp-for="IdAgendamento" />
+                
+                <a asp-action="Index" class="btn btn-secondary px-4 fw-bold">Voltar</a>
+                <button type="submit" class="btn btn-danger px-4 fw-bold"><i class="bi bi-trash"></i> Sim, Apagar</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+@model NeuroSync.Models.Paciente
+
+@{
+    ViewData["Title"] = "Excluir Paciente";
+}
+
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+    <div class="card shadow border-danger" style="max-width: 600px; width: 100%;">
+        <div class="card-header bg-danger text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirmar Exclusão</h4>
+        </div>
+        <div class="card-body p-4">
+            <h5 class="text-center mb-4">Tem certeza de que deseja excluir permanentemente este paciente?</h5>
+            
+            <!-- Resumo dos dados do paciente -->
+            <div class="bg-light p-3 rounded mb-4">
+                <p class="mb-1"><strong>Nome:</strong> @Model.Nome</p>
+                <p class="mb-1"><strong>Idade:</strong> @Model.Idade anos</p>
+                <p class="mb-1"><strong>Data de Nascimento:</strong> @Model.DataNascimento.ToString("dd/MM/yyyy")</p>
+                <p class="mb-0"><strong>Cadastrado em:</strong> @Model.CriadoEm.ToString("dd/MM/yyyy")</p>
+            </div>
+            
+            <p class="text-danger small text-center mb-4">
+                <strong>Atenção:</strong> Esta ação não pode ser desfeita. Todos os dados serão apagados do banco de dados.
+            </p>
+
+            <!-- Formulário com os botões -->
+            <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+                <!-- O ID escondido para o sistema saber quem apagar -->
+                <input type="hidden" asp-for="IdPaciente" />
+                
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary px-4 fw-bold">Cancelar</a>
+                <button type="submit" class="btn btn-danger px-4 fw-bold">Sim, Excluir Paciente</button>
+            </form>
+        </div>
+    </div>
+</div>
