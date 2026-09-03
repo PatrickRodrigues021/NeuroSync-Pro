@@ -1,107 +1,177 @@
 @model IEnumerable<NeuroSync.Models.Paciente>
+
 @{
     ViewData["Title"] = "Pacientes";
 }
 
 <style>
-    /* Estilo do Cartão Principal */
-    .card-table { background-color: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-
-    /* Estilo das Abas */
-    .nav-tabs-custom { border-bottom: 2px solid #f1f5f9; }
-    .nav-tabs-custom .nav-link { border: none; color: var(--text-muted); font-weight: 600; padding: 12px 24px; background: transparent; margin-bottom: -2px; transition: 0.3s; }
-    .nav-tabs-custom .nav-link:hover { color: var(--text-dark); }
-    .nav-tabs-custom .nav-link.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-
-    /* Estilo da Tabela Limpa */
-    .table-custom { margin-bottom: 0; vertical-align: middle; }
-    .table-custom thead th { border-bottom: 1px solid #f1f5f9; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; padding: 16px 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .table-custom tbody tr { border-bottom: 1px solid #f8fafc; transition: 0.2s; }
-    .table-custom tbody tr:hover { background-color: #f8fafc; }
-    .table-custom td { padding: 16px 8px; color: var(--text-dark); font-weight: 500; font-size: 0.95rem; }
-
-    /* Bolinha com a Inicial do Nome */
-    .avatar-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #eef2ff; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+    /* Fundo da tela seguindo o padrão gelo */
+    .pacientes-container { background-color: #f1f5f9; min-height: 80vh; padding-bottom: 2rem; }
     
+    /* Cartão branco principal que abraça a tabela */
+    .dashboard-card { 
+        background: white; 
+        border-radius: 16px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+        padding: 24px; 
+        border: none; 
+    }
+    
+    /* Tabela moderna */
+    .table-custom th { 
+        color: var(--text-muted); 
+        font-weight: 700; 
+        text-transform: uppercase; 
+        font-size: 0.75rem; 
+        letter-spacing: 0.5px; 
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 12px;
+    }
+    .table-custom td { 
+        vertical-align: middle; 
+        border-bottom: 1px solid #f1f5f9; 
+        padding: 16px 8px;
+    }
+    .table-custom tbody tr { transition: 0.2s; }
+    .table-custom tbody tr:hover { background-color: #f8fafc; }
+
     /* Barra de Busca */
-    .search-box { position: relative; }
-    .search-box input { border-radius: 20px; padding-left: 35px; border: 1px solid #e2e8f0; background-color: #f8fafc; }
-    .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-input-group { max-width: 320px; }
+    .search-input-group .input-group-text { background-color: #f8fafc; border-color: #e2e8f0; }
+    .search-input-group .form-control { background-color: #f8fafc; border-color: #e2e8f0; font-weight: 500; }
+    .search-input-group .form-control:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(49, 91, 239, 0.1); }
 </style>
 
-<div class="card-table p-4">
+<div class="pacientes-container pt-3">
     
-    <!-- CABEÇALHO: Abas de Filtro e Busca -->
-    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 nav-tabs-custom">
-        <ul class="nav mb-0">
-            <li class="nav-item"><a class="nav-link active" href="#">Todos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Ativos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Inativos</a></li>
-        </ul>
+    <!-- CABEÇALHO -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Pacientes</h3>
+            <p class="text-muted fw-bold mb-0">Gerencie os cadastros da clínica.</p>
+        </div>
         
-        <div class="d-flex gap-3 mb-2">
-            <!-- Formulário de Busca que se conecta com o seu 'termoBusca' do Controller -->
-            <form method="get" action="/Pacientes/Index" class="search-box">
-                <i class="bi bi-search"></i>
-                <input type="text" name="termoBusca" class="form-control form-control-sm" placeholder="Buscar paciente..." value="@ViewBag.BuscaAtual">
-            </form>
+        <div class="d-flex gap-3">
+            <div class="search-input-group">
+                <div class="input-group">
+                    <span class="input-group-text border-end-0 text-muted rounded-start-pill ps-3">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="campoBuscaPaciente" class="form-control border-start-0 rounded-end-pill shadow-none py-2" placeholder="Buscar paciente..." autocomplete="off">
+                </div>
+            </div>
             
-            <a href="/Pacientes/Create" class="btn btn-primary-custom fw-bold rounded-pill px-4 text-decoration-none">
-                <i class="bi bi-plus-lg me-2"></i> Novo
+            <a href="/Pacientes/Create" class="btn btn-primary fw-bold rounded-pill shadow-sm px-4 d-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg"></i> Novo Paciente
             </a>
         </div>
     </div>
 
-    <!-- TABELA DE DADOS DINÂMICA -->
-    <div class="table-responsive">
-        <table class="table table-custom table-borderless">
-            <thead>
-                <tr>
-                    <th style="width: 70px;"></th>
-                    <th>Nome</th>
-                    <th>Idade</th>
-                    <th>Responsável</th>
-                    <th>Último atendimento</th>
-                    <th style="width: 50px;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- O C# VAI GERAR UMA LINHA PARA CADA PACIENTE NO BANCO -->
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var paciente in Model)
+    <!-- CARTÃO DA TABELA -->
+    <div class="dashboard-card">
+        <div class="table-responsive">
+            <table class="table table-custom mb-0" id="tabelaPacientes">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Idade / Nascimento</th>
+                        <th>Responsável</th>
+                        <th>Cadastrado Em</th>
+                        <th class="text-end pe-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var paciente in Model)
                     {
-                        <tr>
-                            <!-- Pega a primeira letra do nome para o Avatar -->
-                            <td><div class="avatar-circle">@(string.IsNullOrEmpty(paciente.Nome) ? "?" : paciente.Nome.Substring(0, 1).ToUpper())</div></td>
-                            
-                            <td class="fw-bold">@paciente.Nome</td>
-                            
-                            <!-- NOTA: Se a sua classe Paciente não tiver esses campos, me avise e nós alteramos! -->
-                            <td class="text-muted">8 anos (Exemplo)</td>
-                            <td class="text-muted">Responsável (Exemplo)</td>
-                            <td class="text-muted">24/05/2026</td>
-                            
+                        <tr class="linha-paciente">
+                            <!-- Coluna 1: Nome e Avatar -->
                             <td>
-                                <!-- Botão que já aponta para a sua tela de Details! -->
-                                <a href="/Pacientes/Details/@paciente.IdPaciente" class="btn btn-sm btn-light text-primary rounded-circle" title="Ver Prontuário">
-                                    <i class="bi bi-arrow-right-short fs-5"></i>
-                                </a>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 44px; height: 44px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; flex-shrink: 0;">
+                                        @paciente.Nome.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark nome-busca">@paciente.Nome</div>
+                                        <div class="text-muted small">ID: #@paciente.IdPaciente.ToString("D4")</div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Coluna 2: Idade Real -->
+                            <td>
+                                <span class="fw-bold text-dark">@paciente.Idade anos</span>
+                                <div class="text-muted small">@paciente.DataNascimento.ToString("dd/MM/yyyy")</div>
+                            </td>
+                            
+                            <!-- Coluna 3: Responsável Dinâmico -->
+                            <td>
+                                <span class="fw-semibold" style="color: #475569;">
+                                    @(string.IsNullOrEmpty(paciente.NomeMae) ? (string.IsNullOrEmpty(paciente.NomePai) ? "Não informado" : paciente.NomePai) : paciente.NomeMae)
+                                </span>
+                            </td>
+
+                            <!-- Coluna 4: Data de Cadastro -->
+                            <td>
+                                <span class="fw-semibold text-muted">@paciente.CriadoEm.ToString("dd/MM/yyyy")</span>
+                            </td>
+
+                            <!-- Coluna 5: Botões de Ação (Grandes e Arredondados!) -->
+                            <td class="text-end">
+                                <div class="d-flex gap-2 justify-content-end align-items-center">
+                                    <a href="/Pacientes/Edit/@paciente.IdPaciente" class="btn btn-light text-secondary rounded-circle" title="Editar" style="width: 40px; height: 40px; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <a href="/Pacientes/Details/@paciente.IdPaciente" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                                        Abrir Prontuário
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-5">
-                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
-                            Nenhum paciente encontrado no sistema.
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            
+            <!-- Mensagem caso a busca falhe -->
+            <div id="mensagemVaziaTabela" class="text-center py-5" style="display: none;">
+                <i class="bi bi-search text-muted mb-3" style="font-size: 2.5rem;"></i>
+                <h5 class="fw-bold text-muted">Nenhum paciente encontrado</h5>
+            </div>
+        </div>
     </div>
-
 </div>
+
+@section Scripts {
+    <script>
+        // Mesmo script inteligente de busca em tempo real que usamos nos Prontuários!
+        document.addEventListener("DOMContentLoaded", function () {
+            const campoBusca = document.getElementById("campoBuscaPaciente");
+            const linhas = document.querySelectorAll(".linha-paciente");
+            const mensagemVazia = document.getElementById("mensagemVaziaTabela");
+            const tabela = document.getElementById("tabelaPacientes");
+
+            campoBusca.addEventListener("keyup", function () {
+                let termoDigitado = campoBusca.value.toLowerCase();
+                let linhasVisiveis = 0;
+
+                linhas.forEach(function (linha) {
+                    let textoLinha = linha.innerText.toLowerCase();
+
+                    if (textoLinha.includes(termoDigitado)) {
+                        linha.style.display = "";
+                        linhasVisiveis++;
+                    } else {
+                        linha.style.display = "none";
+                    }
+                });
+
+                if (linhasVisiveis === 0) {
+                    mensagemVazia.style.display = "block";
+                    tabela.style.display = "none";
+                } else {
+                    mensagemVazia.style.display = "none";
+                    tabela.style.display = "table";
+                }
+            });
+        });
+    </script>
+}

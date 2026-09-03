@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
-using System.IO; // Para lidar com pastas e arquivos
-using Microsoft.AspNetCore.Http; // Para receber o IFormFile (o arquivo físico)
-using Microsoft.AspNetCore.Hosting; // Para saber onde é a pasta wwwroot
+using System.IO; 
+using Microsoft.AspNetCore.Http; 
+using Microsoft.AspNetCore.Hosting; 
 using NeuroSync.Models;
 using NeuroSync.Data;
 
@@ -17,7 +17,7 @@ namespace NeuroSync.Controllers
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
 
-        // O Construtor agora recebe o banco de dados e o controle de pastas do servidor
+        // O Construtor recebe o banco de dados e o controle de pastas do servidor
         public PacientesController(AppDbContext context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
@@ -36,26 +36,43 @@ namespace NeuroSync.Controllers
             return View(pacientes.OrderBy(p => p.Nome).ToList());
         }
 
-        // 2. TELA DE PRONTUÁRIO / PERFIL (Agora busca os anexos também!)
+        // 2. TELA DE PRONTUÁRIO / PERFIL
+        // GET: Pacientes/Details/5
         public IActionResult Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            var paciente = _context.Pacientes.FirstOrDefault(m => m.IdPaciente == id);
-            if (paciente == null) return NotFound();
+            // 1. Busca os dados do paciente
+            var paciente = _context.Pacientes
+                .FirstOrDefault(m => m.IdPaciente == id);
 
-            ViewBag.Evolucoes = _context.Evolucoes
-                                        .Where(e => e.PacienteId == id)
-                                        .OrderByDescending(e => e.DataRegistro).ToList();
+            if (paciente == null)
+            {
+                return NotFound();
+            }
 
-            ViewBag.Agendamentos = _context.Agendamentos
-                                           .Where(a => a.PacienteId == id && a.DataHora >= DateTime.Today)
-                                           .OrderBy(a => a.DataHora).ToList();
+            // 2. Busca os PRÓXIMOS Atendimentos (Agendamentos com data futura)
+            ViewBag.ProximosAtendimentos = _context.Agendamentos
+                .Where(a => a.PacienteId == id && a.DataHora >= DateTime.Now)
+                .OrderBy(a => a.DataHora)
+                .Take(3)
+                .ToList();
 
-            // Busca os arquivos salvos desse paciente
+            // 3. Busca as ÚLTIMAS Evoluções (Sessões passadas)
+            ViewBag.UltimasEvolucoes = _context.Agendamentos
+                .Where(a => a.PacienteId == id && a.Status.Contains("Realizado"))
+                .OrderByDescending(a => a.DataHora)
+                .Take(3)
+                .ToList();
+
+            // 4. Busca os ANEXOS (Documentos/Exames salvos)
             ViewBag.Anexos = _context.Anexos
-                                     .Where(a => a.PacienteId == id)
-                                     .OrderByDescending(a => a.DataUpload).ToList();
+                .Where(a => a.PacienteId == id)
+                .OrderByDescending(a => a.DataUpload)
+                .ToList();
 
             return View(paciente);
         }
@@ -74,12 +91,12 @@ namespace NeuroSync.Controllers
         }
 
         // ========================================================
-        // NOVA FUNÇÃO: RECEBER E SALVAR O ARQUIVO (PDF/IMAGEM)
+        // 4. NOVA FUNÇÃO: UPLOAD DE ANEXOS (PDF/IMAGEM)
         // ========================================================
         [HttpPost]
-        public async Task<IActionResult> UploadArquivo(int PacienteId, IFormFile arquivo)
+        public async Task<IActionResult> UploadAnexo(int pacienteId, IFormFile arquivoUpload)
         {
-            if (arquivo != null && arquivo.Length > 0)
+            if (arquivoUpload != null && arquivoUpload.Length > 0)
             {
                 // 1. Descobre onde é a pasta wwwroot/uploads
                 string pastaUploads = Path.Combine(_hostEnvironment.WebRootPath, "uploads");
@@ -90,21 +107,21 @@ namespace NeuroSync.Controllers
                     Directory.CreateDirectory(pastaUploads);
                 }
 
-                // 3. Cria um nome único para o arquivo não substituir outro com o mesmo nome
-                string nomeUnico = Guid.NewGuid().ToString() + "_" + arquivo.FileName;
+                // 3. Cria um nome único para o arquivo não substituir outro
+                string nomeUnico = Guid.NewGuid().ToString() + "_" + arquivoUpload.FileName;
                 string caminhoCompleto = Path.Combine(pastaUploads, nomeUnico);
 
-                // 4. Copia o arquivo do seu computador para dentro da pasta do sistema
+                // 4. Copia o arquivo do computador para dentro da pasta do sistema
                 using (var stream = new FileStream(caminhoCompleto, FileMode.Create))
                 {
-                    await arquivo.CopyToAsync(stream);
+                    await arquivoUpload.CopyToAsync(stream);
                 }
 
                 // 5. Salva o registro no Banco de Dados
                 var novoAnexo = new Anexo
                 {
-                    PacienteId = PacienteId,
-                    NomeArquivo = arquivo.FileName,
+                    PacienteId = pacienteId,
+                    NomeArquivo = arquivoUpload.FileName,
                     CaminhoArquivo = "/uploads/" + nomeUnico, // Rota para acessar na web
                     DataUpload = DateTime.Now
                 };
@@ -114,10 +131,10 @@ namespace NeuroSync.Controllers
             }
 
             // Volta para a tela do paciente atualizada
-            return RedirectToAction("Details", new { id = PacienteId });
+            return RedirectToAction("Details", new { id = pacienteId });
         }
 
-        // 4. CADASTRAR NOVO PACIENTE
+        // 5. CADASTRAR NOVO PACIENTE
         public IActionResult Create() { return View(); }
 
         [HttpPost]
@@ -128,7 +145,7 @@ namespace NeuroSync.Controllers
             return View(paciente);
         }
 
-        // 5. EDITAR PACIENTE E ANAMNESE
+        // 6. EDITAR PACIENTE E ANAMNESE
         public IActionResult Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -145,7 +162,7 @@ namespace NeuroSync.Controllers
             return View(paciente);
         }
 
-        // 6. EXCLUIR PACIENTE
+        // 7. EXCLUIR PACIENTE
         public IActionResult Delete(int? id)
         {
             if (id == null) return NotFound();
